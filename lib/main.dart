@@ -25,19 +25,11 @@ class MyApp extends StatelessWidget {
       },
       title: '다잇다',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
         primaryColor: Colors.orangeAccent,
         backgroundColor: Colors.orange[50],
         accentColor: Colors.orangeAccent,
-        appBarTheme: AppBarTheme(textTheme: TextTheme(headline6: TextStyle(color: Colors.white))),
-        //canvasColor: Colors.yellow,
-        //Color.fromRGBO(10, 199, 169, 1),
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
+        appBarTheme: AppBarTheme(
+            textTheme: TextTheme(headline6: TextStyle(color: Colors.white))),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       //home: MyHomePage(title: '다잇다'),
@@ -47,107 +39,126 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Widget guideButton(String name, String imageSource){
-    return Container(width:100, height:150,
-      child: FlatButton(
-        child: Container(
-            width:100, height: 140,
-            child:Column(crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(height:10),
-                Container(width: 70,height: 70,decoration: BoxDecoration(shape: BoxShape.circle,color: Theme.of(context).backgroundColor),
-                  child:Center(child: Image.asset(imageSource,width: 50, height: 60, fit: BoxFit.contain,))
-                  ,),
-                Container(height: 12),
-                Text(name, textAlign: TextAlign.center,),
-                Container(height: 12),
-              ],
-            )
-        ),
-        onPressed: () {
-          /*...*/
-
-        },
-
-      ),
+  Widget guideButton(String name, String imageSource) {
+    double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
+    double PHONESIZE_HEIGHT = MediaQuery.of(context).size.width;
+    return Container(
+      width: PHONESIZE_WIDTH / 4 - 5,
+      height: 150,
+      child: Container(
+          width: (PHONESIZE_WIDTH / 4) - 30,
+          height: 140,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              InkWell(
+                child: Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context).backgroundColor),
+                  child: Center(
+                      child: Image.asset(
+                    imageSource,
+                    width: 50,
+                    height: 60,
+                    fit: BoxFit.contain,
+                  )),
+                ),
+                onTap: () {},
+              ),
+              Container(height: 12),
+              Text(
+                name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2),
+              ),
+              Container(height: 12),
+            ],
+          )),
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title, ),centerTitle: true,
+        title: Text(
+          widget.title,
+        ),
+        centerTitle: true,
       ),
-
       floatingActionButton: FloatingActionButton.extended(
-        icon: Icon( Icons.map, color: Colors.white,),
-        label: Text("Go!", style: TextStyle(color: Colors.white),),
-        onPressed: (){
+        icon: Icon(
+          Icons.map,
+          color: Colors.white,
+        ),
+        label: Text(
+          "Go!",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () {
           Navigator.pushNamed(context, '/map');
         },
       ),
-
       body: ListView(
         children: [
           Container(
               child: CachedNetworkImage(
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-                imageUrl: "https://knowmywork.com/wp-content/uploads/2017/09/Android-Native-Express-Ad-in-RecyclerView-e1507394886156.jpg",)
-
-          ),
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+            imageUrl:
+                "https://knowmywork.com/wp-content/uploads/2017/09/Android-Native-Express-Ad-in-RecyclerView-e1507394886156.jpg",
+          )),
           Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
               margin: EdgeInsets.all(10),
               elevation: 2,
               child: ListTile(
-                title: Text("앱 사용 설명서", style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold),),leading: Icon(Icons.book, color: Theme.of(context).accentColor,),
-              )
-          ),
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),margin: EdgeInsets.all(10),
-            elevation: 2,
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(padding: EdgeInsets.only(left: 30, top: 20, bottom: 10),
-                  child: Text(
-                      '뭐 먹을까?',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,color: Theme.of(context).accentColor)
-                  ),
+                title: Text(
+                  "앱 사용 설명서",
+                  style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontWeight: FontWeight.bold),
                 ),
-                Wrap(alignment: WrapAlignment.spaceEvenly,
+                leading: Icon(
+                  Icons.book,
+                  color: Theme.of(context).accentColor,
+                ),
+              )),
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            margin: EdgeInsets.all(10),
+            elevation: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 30, top: 20, bottom: 10),
+                  child: Text('뭐 먹을까?',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Theme.of(context).accentColor)),
+                ),
+                Wrap(
+                  alignment: WrapAlignment.spaceEvenly,
                   children: [
-                    guideButton("전체", "images/theme/block.png"),
+                    guideButton("전체", "images/theme/koreanfood.png"),
                     guideButton("한식", "images/theme/koreanfood.png"),
                     guideButton("분식", "images/theme/gimbap.png"),
                     guideButton("카페", "images/theme/cafe.png"),
@@ -165,13 +176,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-
-
         ],
-
       ),
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
-
