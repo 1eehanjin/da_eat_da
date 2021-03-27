@@ -13,6 +13,7 @@ class MapView extends StatefulWidget {
 class _MapViewState extends State<MapView> {
   @override
   Widget build(BuildContext context) {
+    //Get.snackbar("알림", "위치를 변경하려면 마커를 드래그해 주세요.", snackPosition: SnackPosition.BOTTOM);
     Fluttertoast.showToast(
         msg: "위치를 변경하려면 마커를 드래그해 주세요.",
         toastLength: Toast.LENGTH_LONG,
@@ -27,14 +28,14 @@ class _MapViewState extends State<MapView> {
       Container(height:120,
         child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            FloatingActionButton(backgroundColor:Colors.white,
+            FloatingActionButton(backgroundColor:Colors.white,heroTag: "Button1",
               child: Text("500m", style: TextStyle(color: Theme.of(context).accentColor),),
             ),
-            FloatingActionButton.extended(
+            FloatingActionButton.extended(heroTag: "Buttton2",
               icon: Icon( Icons.restaurant_menu, color: Colors.white,),
               label: Text("Go!", style: TextStyle(color: Colors.white),),
               onPressed: (){
-                Get.toNamed('/result');
+                Get.to(ResultView(), transition: Transition.fadeIn);
               },
             ),
           ],

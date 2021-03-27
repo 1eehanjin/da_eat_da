@@ -107,10 +107,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "Button1",
         icon: Icon( Icons.map, color: Colors.white,),
         label: Text("Go!", style: TextStyle(color: Colors.white),),
         onPressed: (){
-          Get.toNamed('/map',);
+          Get.to(MapView(),transition: Transition.fadeIn);
 
         },
       ),
