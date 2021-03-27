@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 
 import 'ResultView.dart';
 
@@ -33,7 +34,7 @@ class _MapViewState extends State<MapView> {
               icon: Icon( Icons.restaurant_menu, color: Colors.white,),
               label: Text("Go!", style: TextStyle(color: Colors.white),),
               onPressed: (){
-                Navigator.pushNamed(context, '/result');
+                Get.toNamed('/result');
               },
             ),
           ],
