@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import 'ResultView.dart';
 import 'mapView.dart';
@@ -14,15 +15,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        // "/" Route로 이동하면, FirstScreen 위젯을 생성합니다.
-        '/': (context) => MyHomePage(title: '다잇다'),
-        // "/second" route로 이동하면, SecondScreen 위젯을 생성합니다.
-        '/map': (context) => MapView(),
-        '/result': (context) => ResultView(),
-      },
+    return GetMaterialApp(
+      initialRoute: '/home',
+      getPages: [
+        GetPage(name: "/home", page: () => MyHomePage()),
+        GetPage(name: "/map", page: () => MapView()),
+        GetPage(name: "/result", page: () => ResultView()),
+      ],
+      // routes: {
+      //   // "/" Route로 이동하면, FirstScreen 위젯을 생성합니다.
+      //   '/': (context) => MyHomePage(title: '다잇다'),
+      //   // "/second" route로 이동하면, SecondScreen 위젯을 생성합니다.
+      //   '/map': (context) => MapView(),
+      //   '/result': (context) => ResultView(),
+      // },
       title: '다잇다',
       theme: ThemeData(
         // This is the theme of your application.
@@ -105,14 +111,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title, ),centerTitle: true,
+        title: Text("다잇", ),centerTitle: true,
       ),
 
       floatingActionButton: FloatingActionButton.extended(
         icon: Icon( Icons.map, color: Colors.white,),
         label: Text("Go!", style: TextStyle(color: Colors.white),),
         onPressed: (){
-          Navigator.pushNamed(context, '/map');
+          Get.toNamed('/map',);
         },
       ),
 

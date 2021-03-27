@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 
 class ResultView extends StatefulWidget {
   @override
@@ -19,8 +20,7 @@ class _ResultViewState extends State<ResultView> {
                 icon: Icon( Icons.home, color: Theme.of(context).accentColor,),
                 label: Text("홈으로", style: TextStyle(color: Theme.of(context).accentColor),),
                 onPressed: (){
-                  Navigator.pop(context);
-                  Navigator.pop(context);
+                  Get.toNamed('/home');
                 },
               ),
               FloatingActionButton.extended(
