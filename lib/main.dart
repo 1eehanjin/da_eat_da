@@ -1,13 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'ResultView.dart';
 import 'mapView.dart';
 
-void main() {
+void main() async{
+  /// Make sure you add this line here, so the plugin can access the native side
+  WidgetsFlutterBinding.ensureInitialized();
+
+  /// Make sure to initialize the MobileAds sdk. It returns a future
+  /// that will be completed as soon as it initializes
+  await MobileAds.initialize();
+
   runApp(MyApp());
 }
 
@@ -117,14 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
-          Container(
-              child: CachedNetworkImage(
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                CircularProgressIndicator(value: downloadProgress.progress),
-            errorWidget: (context, url, error) => Icon(Icons.error),
-            imageUrl:
-                "https://knowmywork.com/wp-content/uploads/2017/09/Android-Native-Express-Ad-in-RecyclerView-e1507394886156.jpg",
-          )),
+          NativeAds(),
           Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
@@ -184,3 +185,140 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+
+class NativeAds extends StatefulWidget {
+  const NativeAds({Key key}) : super(key: key);
+
+  @override
+  _NativeAdsState createState() => _NativeAdsState();
+}
+
+class _NativeAdsState extends State<NativeAds>
+    with AutomaticKeepAliveClientMixin {
+  Widget child;
+
+  final controller = NativeAdController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.load();
+    controller.onEvent.listen((event) {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    if (child != null) return child;
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() => child = SizedBox());
+        await Future.delayed(Duration(milliseconds: 20));
+        setState(() => child = null);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: Column(
+          children: [
+            if (controller.isLoaded)
+            NativeAd(
+              height: 300,
+              // unitId: MobileAds.nativeAdVideoTestUnitId,
+              builder: (context, child) {
+                return Material(
+                  elevation: 8,
+                  child: child,
+                );
+              },
+              buildLayout: fullBuilder,
+              loading: Text('loading'),
+              error: Text('error'),
+              icon: AdImageView(size: 40),
+              headline: AdTextView(
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                maxLines: 1,
+              ),
+              media: AdMediaView(
+                height: 180,
+                width: MATCH_PARENT,
+                elevation: 6,
+                elevationColor: Colors.deepOrangeAccent,
+              ),
+              attribution: AdTextView(
+                width: WRAP_CONTENT,
+                height: WRAP_CONTENT,
+                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0),
+                margin: EdgeInsets.only(right: 4),
+                maxLines: 1,
+                text: 'Anúncio',
+                decoration: AdDecoration(
+                  borderRadius: AdBorderRadius.all(10),
+                  border: BorderSide(color: Colors.green, width: 1),
+                ),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              button: AdButtonView(
+                elevation: 18,
+                elevationColor: Colors.orangeAccent,
+                height: MATCH_PARENT,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+AdLayoutBuilder get fullBuilder => (ratingBar, media, icon, headline,
+    advertiser, body, price, store, attribuition, button) {
+  return AdLinearLayout(
+    padding: EdgeInsets.all(10),
+    // The first linear layout width needs to be extended to the
+    // parents height, otherwise the children won't fit good
+    width: MATCH_PARENT,
+    decoration: AdDecoration(
+        gradient: AdLinearGradient(
+          colors: [Colors.white, Colors.white],
+          orientation: AdGradientOrientation.tl_br,
+        )),
+    children: [
+      media,
+      AdLinearLayout(
+        children: [
+          icon,
+          AdLinearLayout(children: [
+            headline,
+            AdLinearLayout(
+              children: [attribuition, advertiser, ratingBar],
+              orientation: HORIZONTAL,
+              width: MATCH_PARENT,
+            ),
+          ], margin: EdgeInsets.only(left: 4)),
+        ],
+        gravity: LayoutGravity.center_horizontal,
+        width: WRAP_CONTENT,
+        orientation: HORIZONTAL,
+        margin: EdgeInsets.only(top: 6),
+      ),
+      AdLinearLayout(
+        children: [button],
+        orientation: HORIZONTAL,
+      ),
+    ],
+  );
+};
+
