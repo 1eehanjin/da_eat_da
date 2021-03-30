@@ -126,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView(
         children: [
           NativeAds(),
+
           Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
@@ -220,7 +221,7 @@ class _NativeAdsState extends State<NativeAds>
         setState(() => child = null);
       },
       child: Padding(
-        padding: const EdgeInsets.all(0.0),
+        padding: const EdgeInsets.only(bottom: 10.0),
         child: Column(
           children: [
             if (controller.isLoaded)
@@ -229,7 +230,7 @@ class _NativeAdsState extends State<NativeAds>
               // unitId: MobileAds.nativeAdVideoTestUnitId,
               builder: (context, child) {
                 return Material(
-                  elevation: 8,
+                  elevation: 3,
                   child: child,
                 );
               },
@@ -241,7 +242,7 @@ class _NativeAdsState extends State<NativeAds>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.orangeAccent,
                 ),
                 maxLines: 1,
               ),
@@ -263,7 +264,7 @@ class _NativeAdsState extends State<NativeAds>
                   border: BorderSide(color: Colors.green, width: 1),
                 ),
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.orangeAccent,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -292,7 +293,7 @@ AdLayoutBuilder get fullBuilder => (ratingBar, media, icon, headline,
     width: MATCH_PARENT,
     decoration: AdDecoration(
         gradient: AdLinearGradient(
-          colors: [Colors.white, Colors.white],
+          colors: [Colors.deepOrangeAccent, Colors.deepOrangeAccent],
           orientation: AdGradientOrientation.tl_br,
         )),
     children: [
