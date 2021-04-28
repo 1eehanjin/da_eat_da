@@ -59,10 +59,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool isSelected = false;
   Widget guideButton(String name, String imageSource) {
     double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
     double PHONESIZE_HEIGHT = MediaQuery.of(context).size.width;
-    return Container(
+    return Opacity(
+        opacity: isSelected ? 1 : 0.5,
+        child: Container(
       width: PHONESIZE_WIDTH / 4 - 5,
       height: 150,
       child: Container(
@@ -86,7 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     fit: BoxFit.contain,
                   )),
                 ),
-                onTap: () {},
+                onTap: () {
+                  isSelected = !isSelected;
+                  setState(() {
+                  });
+                },
               ),
               Container(height: 12),
               Text(
@@ -100,6 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(height: 12),
             ],
           )),
+    )
     );
   }
 
