@@ -66,10 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Opacity(
         opacity: isSelected ? 1 : 0.5,
         child: Container(
-      width: PHONESIZE_WIDTH / 4 - 5,
-      height: 150,
-      child: Container(
-          width: (PHONESIZE_WIDTH / 4) - 30,
+          width: (PHONESIZE_WIDTH / 4) - 5,
           height: 140,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,7 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(height: 12),
             ],
           )),
-    )
     );
   }
 
