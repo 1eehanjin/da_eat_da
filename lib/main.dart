@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
 
-void main() async{
+void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -64,40 +64,52 @@ class _MyHomePageState extends State<MyHomePage> {
     double PHONESIZE_HEIGHT = MediaQuery.of(context).size.width;
     return Container(
       width: PHONESIZE_WIDTH / 4 - 5,
-      height: 150,
+      height: 180,
       child: Container(
           width: (PHONESIZE_WIDTH / 4) - 30,
           height: 140,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              InkWell(
-                child: Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).backgroundColor),
-                  child: Center(
-                      child: Image.asset(
-                    imageSource,
-                    width: 50,
-                    height: 60,
-                    fit: BoxFit.contain,
-                  )),
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).backgroundColor),
+                child: Center(
+                    child: Image.asset(
+                  imageSource,
+                  width: 50,
+                  height: 60,
+                  fit: BoxFit.contain,
+                )),
+              ),
+              Container(height: 12),
+              Container(
+                height: 18,
+                child: Text(
+                  name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2),
                 ),
-                onTap: () {},
               ),
-              Container(height: 12),
-              Text(
-                name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2),
+              Padding(
+                padding: EdgeInsets.all(5),
+                child: LiteRollingSwitch(
+                  value: true,
+                  colorOn: Colors.greenAccent,
+                  colorOff: Colors.redAccent,
+                  textOn: " ",
+                  textOff: " ",
+                  animationDuration: Duration(),
+                  //onChanged: (bool position) {},
+                ),
               ),
-              Container(height: 12),
+              Container(height: 20),
             ],
           )),
     );
@@ -108,25 +120,30 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
-
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text("다잇다", ),centerTitle: true,
-
+        title: Text(
+          "다잇다",
+        ),
+        centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: "Button1",
-        icon: Icon( Icons.map, color: Colors.white,),
-        label: Text("Go!", style: TextStyle(color: Colors.white),),
-        onPressed: (){
-          Get.to(MapView(),transition: Transition.fadeIn);
-
+        icon: Icon(
+          Icons.map,
+          color: Colors.white,
+        ),
+        label: Text(
+          "Go!",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: () {
+          Get.to(MapView(), transition: Transition.fadeIn);
         },
       ),
       body: ListView(
         children: [
           NativeAds(),
-
           Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
@@ -187,7 +204,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
 class NativeAds extends StatefulWidget {
   const NativeAds({Key key}) : super(key: key);
 
@@ -225,55 +241,55 @@ class _NativeAdsState extends State<NativeAds>
         child: Column(
           children: [
             if (controller.isLoaded)
-            NativeAd(
-              height: 300,
-              // unitId: MobileAds.nativeAdVideoTestUnitId,
-              builder: (context, child) {
-                return Material(
-                  elevation: 3,
-                  child: child,
-                );
-              },
-              buildLayout: fullBuilder,
-              loading: Text('loading'),
-              error: Text('error'),
-              icon: AdImageView(size: 40),
-              headline: AdTextView(
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orangeAccent,
+              NativeAd(
+                height: 300,
+                // unitId: MobileAds.nativeAdVideoTestUnitId,
+                builder: (context, child) {
+                  return Material(
+                    elevation: 3,
+                    child: child,
+                  );
+                },
+                buildLayout: fullBuilder,
+                loading: Text('loading'),
+                error: Text('error'),
+                icon: AdImageView(size: 40),
+                headline: AdTextView(
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent,
+                  ),
+                  maxLines: 1,
                 ),
-                maxLines: 1,
-              ),
-              media: AdMediaView(
-                height: 180,
-                width: MATCH_PARENT,
-                elevation: 6,
-                elevationColor: Colors.deepOrangeAccent,
-              ),
-              attribution: AdTextView(
-                width: WRAP_CONTENT,
-                height: WRAP_CONTENT,
-                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0),
-                margin: EdgeInsets.only(right: 4),
-                maxLines: 1,
-                text: 'Anúncio',
-                decoration: AdDecoration(
-                  borderRadius: AdBorderRadius.all(10),
-                  border: BorderSide(color: Colors.green, width: 1),
+                media: AdMediaView(
+                  height: 180,
+                  width: MATCH_PARENT,
+                  elevation: 6,
+                  elevationColor: Colors.deepOrangeAccent,
                 ),
-                style: TextStyle(
-                  color: Colors.orangeAccent,
-                  fontWeight: FontWeight.bold,
+                attribution: AdTextView(
+                  width: WRAP_CONTENT,
+                  height: WRAP_CONTENT,
+                  padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0),
+                  margin: EdgeInsets.only(right: 4),
+                  maxLines: 1,
+                  text: 'Anúncio',
+                  decoration: AdDecoration(
+                    borderRadius: AdBorderRadius.all(10),
+                    border: BorderSide(color: Colors.green, width: 1),
+                  ),
+                  style: TextStyle(
+                    color: Colors.orangeAccent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                button: AdButtonView(
+                  elevation: 18,
+                  elevationColor: Colors.orangeAccent,
+                  height: MATCH_PARENT,
                 ),
               ),
-              button: AdButtonView(
-                elevation: 18,
-                elevationColor: Colors.orangeAccent,
-                height: MATCH_PARENT,
-              ),
-            ),
           ],
         ),
       ),
@@ -285,41 +301,40 @@ class _NativeAdsState extends State<NativeAds>
 }
 
 AdLayoutBuilder get fullBuilder => (ratingBar, media, icon, headline,
-    advertiser, body, price, store, attribuition, button) {
-  return AdLinearLayout(
-    padding: EdgeInsets.all(10),
-    // The first linear layout width needs to be extended to the
-    // parents height, otherwise the children won't fit good
-    width: MATCH_PARENT,
-    decoration: AdDecoration(
-        gradient: AdLinearGradient(
+        advertiser, body, price, store, attribuition, button) {
+      return AdLinearLayout(
+        padding: EdgeInsets.all(10),
+        // The first linear layout width needs to be extended to the
+        // parents height, otherwise the children won't fit good
+        width: MATCH_PARENT,
+        decoration: AdDecoration(
+            gradient: AdLinearGradient(
           colors: [Colors.deepOrangeAccent, Colors.deepOrangeAccent],
           orientation: AdGradientOrientation.tl_br,
         )),
-    children: [
-      media,
-      AdLinearLayout(
         children: [
-          icon,
-          AdLinearLayout(children: [
-            headline,
-            AdLinearLayout(
-              children: [attribuition, advertiser, ratingBar],
-              orientation: HORIZONTAL,
-              width: MATCH_PARENT,
-            ),
-          ], margin: EdgeInsets.only(left: 4)),
+          media,
+          AdLinearLayout(
+            children: [
+              icon,
+              AdLinearLayout(children: [
+                headline,
+                AdLinearLayout(
+                  children: [attribuition, advertiser, ratingBar],
+                  orientation: HORIZONTAL,
+                  width: MATCH_PARENT,
+                ),
+              ], margin: EdgeInsets.only(left: 4)),
+            ],
+            gravity: LayoutGravity.center_horizontal,
+            width: WRAP_CONTENT,
+            orientation: HORIZONTAL,
+            margin: EdgeInsets.only(top: 6),
+          ),
+          AdLinearLayout(
+            children: [button],
+            orientation: HORIZONTAL,
+          ),
         ],
-        gravity: LayoutGravity.center_horizontal,
-        width: WRAP_CONTENT,
-        orientation: HORIZONTAL,
-        margin: EdgeInsets.only(top: 6),
-      ),
-      AdLinearLayout(
-        children: [button],
-        orientation: HORIZONTAL,
-      ),
-    ],
-  );
-};
-
+      );
+    };
