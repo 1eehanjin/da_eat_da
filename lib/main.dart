@@ -125,8 +125,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
-          NativeAds(),
-
           Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
@@ -144,6 +142,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Theme.of(context).accentColor,
                 ),
               )),
+          NativeAds(),
+
+
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -195,8 +196,7 @@ class NativeAds extends StatefulWidget {
   _NativeAdsState createState() => _NativeAdsState();
 }
 
-class _NativeAdsState extends State<NativeAds>
-    with AutomaticKeepAliveClientMixin {
+class _NativeAdsState extends State<NativeAds> with AutomaticKeepAliveClientMixin {
   Widget child;
 
   final controller = NativeAdController();
@@ -214,69 +214,66 @@ class _NativeAdsState extends State<NativeAds>
   Widget build(BuildContext context) {
     super.build(context);
     if (child != null) return child;
-    return RefreshIndicator(
-      onRefresh: () async {
-        setState(() => child = SizedBox());
-        await Future.delayed(Duration(milliseconds: 20));
-        setState(() => child = null);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 0),
+      child: (controller.isLoaded)?
+    NativeAd(
+      height: 300,
+      unitId: MobileAds.nativeAdVideoTestUnitId,
+      builder: (context, child) {
+        return Material(
+          //elevation: 3,
+          child: child,
+        );
       },
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: Column(
-          children: [
-            if (controller.isLoaded)
-            NativeAd(
-              height: 300,
-              // unitId: MobileAds.nativeAdVideoTestUnitId,
-              builder: (context, child) {
-                return Material(
-                  elevation: 3,
-                  child: child,
-                );
-              },
-              buildLayout: fullBuilder,
-              loading: Text('loading'),
-              error: Text('error'),
-              icon: AdImageView(size: 40),
-              headline: AdTextView(
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orangeAccent,
-                ),
-                maxLines: 1,
-              ),
-              media: AdMediaView(
-                height: 180,
-                width: MATCH_PARENT,
-                elevation: 6,
-                elevationColor: Colors.deepOrangeAccent,
-              ),
-              attribution: AdTextView(
-                width: WRAP_CONTENT,
-                height: WRAP_CONTENT,
-                padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0),
-                margin: EdgeInsets.only(right: 4),
-                maxLines: 1,
-                text: 'Anúncio',
-                decoration: AdDecoration(
-                  borderRadius: AdBorderRadius.all(10),
-                  border: BorderSide(color: Colors.green, width: 1),
-                ),
-                style: TextStyle(
-                  color: Colors.orangeAccent,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              button: AdButtonView(
-                elevation: 18,
-                elevationColor: Colors.orangeAccent,
-                height: MATCH_PARENT,
-              ),
-            ),
-          ],
+      buildLayout: fullBuilder,
+      loading: Container(height:300,alignment: Alignment.center,
+          child: Text('loading')
+      ),
+      error: Text('error'),
+      icon: AdImageView(size: 40),
+      headline: AdTextView(
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        maxLines: 1,
+      ),
+      media: AdMediaView(
+        height: 180,
+        width: MATCH_PARENT,
+        //elevation: 6,
+        //elevationColor: Colors.deepOrangeAccent,
+      ),
+      attribution: AdTextView(
+        width: WRAP_CONTENT,
+        height: WRAP_CONTENT,
+        padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0),
+        margin: EdgeInsets.only(right: 4),
+        maxLines: 1,
+        text: 'Anúncio',
+        decoration: AdDecoration(
+          borderRadius: AdBorderRadius.all(10),
+          border: BorderSide(color: Colors.orangeAccent, width: 1),
+        ),
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
         ),
       ),
+      button: AdButtonView(
+        textStyle: TextStyle(color:Colors.white),
+        decoration: AdDecoration(borderRadius: AdBorderRadius.all(50),
+        backgroundColor: Colors.orangeAccent
+      ),
+        height: MATCH_PARENT,
+      ),
+    )
+    :Container(
+        height: 300,alignment: Alignment.center,
+          child: Text('loading')
+      )
     );
   }
 
@@ -293,7 +290,7 @@ AdLayoutBuilder get fullBuilder => (ratingBar, media, icon, headline,
     width: MATCH_PARENT,
     decoration: AdDecoration(
         gradient: AdLinearGradient(
-          colors: [Colors.deepOrangeAccent, Colors.deepOrangeAccent],
+          colors: [Colors.orange[50], Colors.orange[50]],
           orientation: AdGradientOrientation.tl_br,
         )),
     children: [
