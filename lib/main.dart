@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
@@ -59,64 +61,101 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Widget guideButton(String name, String imageSource) {
+  int count = 0;
+  List<bool> a = [
+    false,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+  ];
+
+  Widget guideButton(String name, String imageSource, int numb) {
     double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
-    double PHONESIZE_HEIGHT = MediaQuery.of(context).size.width;
-    return Container(
-      width: PHONESIZE_WIDTH / 4 - 5,
-      height: 180,
-      child: Container(
-          width: (PHONESIZE_WIDTH / 4) - 30,
-          height: 140,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(context).backgroundColor),
-                child: Center(
-                    child: Image.asset(
-                  imageSource,
-                  width: 50,
-                  height: 60,
-                  fit: BoxFit.contain,
-                )),
-              ),
-              Container(height: 12),
-              Container(
-                height: 18,
-                child: Text(
-                  name,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(5),
-                child: LiteRollingSwitch(
-                  value: true,
-                  colorOn: Colors.greenAccent,
-                  colorOff: Colors.redAccent,
-                  textOn: " ",
-                  textOff: " ",
-                  animationDuration: Duration(),
-                  //onChanged: (bool position) {},
-                ),
-              ),
-              Container(height: 20),
-            ],
-          )),
-    );
+    return InkWell(
+        child: Opacity(
+            opacity: a[numb] ? 1 : 0.5,
+            child: Container(
+              width: PHONESIZE_WIDTH / 4 - 5,
+              height: 150,
+              child: Container(
+                  width: (PHONESIZE_WIDTH / 4) - 30,
+                  height: 140,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).backgroundColor),
+                        child: Center(
+                            child: Image.asset(
+                          imageSource,
+                          width: 50,
+                          height: 60,
+                          fit: BoxFit.contain,
+                        )),
+                      ),
+                      Container(height: 12),
+                      Text(
+                        name,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2),
+                      ),
+                      Container(height: 12),
+                    ],
+                  )),
+            )),
+        onTap: () {
+          setState(() {
+            if (numb == 0) {
+              if (a[numb] == false) {
+                a[numb] = !a[numb];
+                for (int i = 1; i < a.length; i++) {
+                  a[i] = a[numb];
+                }
+                count = 12;
+              } else if (a[numb] == true) {
+                a[numb] = !a[numb];
+                for (int i = 1; i < a.length; i++) {
+                  a[i] = a[numb];
+                }
+                count = 0;
+              }
+            } else {
+              if (a[numb] == true) {
+                a[numb] = !a[numb];
+                count--;
+              } else if (a[numb] == false) {
+                a[numb] = !a[numb];
+                count++;
+              }
+              if (count == 12) {
+                a[0] = true;
+              } else {
+                a[0] = false;
+              }
+            }
+          });
+        });
   }
 
   @override
   Widget build(BuildContext context) {
+    double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
@@ -143,7 +182,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: [
-          NativeAds(),
           Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15)),
@@ -161,6 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Theme.of(context).accentColor,
                 ),
               )),
+          NativeAds(),
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -180,19 +219,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 Wrap(
                   alignment: WrapAlignment.spaceEvenly,
                   children: [
-                    guideButton("전체", "images/theme/koreanfood.png"),
-                    guideButton("한식", "images/theme/koreanfood.png"),
-                    guideButton("분식", "images/theme/gimbap.png"),
-                    guideButton("카페", "images/theme/cafe.png"),
-                    guideButton("돈가스/회/일식", "images/theme/sushi.png"),
-                    guideButton("치킨", "images/theme/chicken.png"),
-                    guideButton("피자", "images/theme/pizza.png"),
-                    guideButton("아시안", "images/theme/asianfood.png"),
-                    guideButton("양식", "images/theme/spaguetti.png"),
-                    guideButton("중국집", "images/theme/chinesefood.png"),
-                    guideButton("찜/탕", "images/theme/cooking.png"),
-                    guideButton("패스트푸드", "images/theme/frenchfries.png"),
-                    guideButton("술", "images/theme/beer.png"),
+                    guideButton("전체", "images/theme/koreanfood.png", 0),
+                    guideButton("한식", "images/theme/koreanfood.png", 1),
+                    guideButton("분식", "images/theme/gimbap.png", 2),
+                    guideButton("카페", "images/theme/cafe.png", 3),
+                    guideButton("돈가스/회/일식", "images/theme/sushi.png", 4),
+                    guideButton("치킨", "images/theme/chicken.png", 5),
+                    guideButton("피자", "images/theme/pizza.png", 6),
+                    guideButton("아시안", "images/theme/asianfood.png", 7),
+                    guideButton("양식", "images/theme/spaguetti.png", 8),
+                    guideButton("중국집", "images/theme/chinesefood.png", 9),
+                    guideButton("찜/탕", "images/theme/cooking.png", 10),
+                    guideButton("패스트푸드", "images/theme/frenchfries.png", 11),
+                    guideButton("술", "images/theme/beer.png", 12),
                   ],
                 ),
               ],
@@ -230,43 +269,38 @@ class _NativeAdsState extends State<NativeAds>
   Widget build(BuildContext context) {
     super.build(context);
     if (child != null) return child;
-    return RefreshIndicator(
-      onRefresh: () async {
-        setState(() => child = SizedBox());
-        await Future.delayed(Duration(milliseconds: 20));
-        setState(() => child = null);
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: Column(
-          children: [
-            if (controller.isLoaded)
-              NativeAd(
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 0),
+        child: (controller.isLoaded)
+            ? NativeAd(
                 height: 300,
-                // unitId: MobileAds.nativeAdVideoTestUnitId,
+                unitId: MobileAds.nativeAdVideoTestUnitId,
                 builder: (context, child) {
                   return Material(
-                    elevation: 3,
+                    //elevation: 3,
                     child: child,
                   );
                 },
                 buildLayout: fullBuilder,
-                loading: Text('loading'),
+                loading: Container(
+                    height: 300,
+                    alignment: Alignment.center,
+                    child: Text('loading')),
                 error: Text('error'),
                 icon: AdImageView(size: 40),
                 headline: AdTextView(
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.orangeAccent,
+                    color: Colors.black,
                   ),
                   maxLines: 1,
                 ),
                 media: AdMediaView(
                   height: 180,
                   width: MATCH_PARENT,
-                  elevation: 6,
-                  elevationColor: Colors.deepOrangeAccent,
+                  //elevation: 6,
+                  //elevationColor: Colors.deepOrangeAccent,
                 ),
                 attribution: AdTextView(
                   width: WRAP_CONTENT,
@@ -277,23 +311,25 @@ class _NativeAdsState extends State<NativeAds>
                   text: 'Anúncio',
                   decoration: AdDecoration(
                     borderRadius: AdBorderRadius.all(10),
-                    border: BorderSide(color: Colors.green, width: 1),
+                    border: BorderSide(color: Colors.orangeAccent, width: 1),
                   ),
                   style: TextStyle(
-                    color: Colors.orangeAccent,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 button: AdButtonView(
-                  elevation: 18,
-                  elevationColor: Colors.orangeAccent,
+                  textStyle: TextStyle(color: Colors.white),
+                  decoration: AdDecoration(
+                      borderRadius: AdBorderRadius.all(50),
+                      backgroundColor: Colors.orangeAccent),
                   height: MATCH_PARENT,
                 ),
-              ),
-          ],
-        ),
-      ),
-    );
+              )
+            : Container(
+                height: 300,
+                alignment: Alignment.center,
+                child: Text('loading')));
   }
 
   @override
@@ -309,7 +345,7 @@ AdLayoutBuilder get fullBuilder => (ratingBar, media, icon, headline,
         width: MATCH_PARENT,
         decoration: AdDecoration(
             gradient: AdLinearGradient(
-          colors: [Colors.deepOrangeAccent, Colors.deepOrangeAccent],
+          colors: [Colors.orange[50], Colors.orange[50]],
           orientation: AdGradientOrientation.tl_br,
         )),
         children: [
