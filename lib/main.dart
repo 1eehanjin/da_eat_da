@@ -16,7 +16,9 @@ void main() async {
 
   /// Make sure to initialize the MobileAds sdk. It returns a future
   /// that will be completed as soon as it initializes
-  await MobileAds.initialize();
+  if(GetPlatform.isWeb == false) {
+    await MobileAds.initialize();
+  }
 
   runApp(MyApp());
 }
@@ -200,6 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Theme.of(context).accentColor,
                 ),
               )),
+          GetPlatform.isWeb ? Container():
           NativeAds(),
           Card(
             shape:
