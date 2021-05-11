@@ -5,9 +5,10 @@ import 'package:native_admob_flutter/native_admob_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
-import 'package:toggle_switch/toggle_switch.dart';
+import 'package:showcaseview/showcase.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
@@ -18,7 +19,22 @@ void main() async {
   /// that will be completed as soon as it initializes
   await MobileAds.initialize();
 
-  runApp(MyApp());
+  runApp(
+    ShowCaseWidget(
+      autoPlay: false,
+      autoPlayDelay: Duration(seconds: 8),
+      autoPlayLockEnable: false,
+      builder: Builder(
+        builder: (context) => MyApp(),
+      ),
+      onStart: (index, key) {
+        print('onStart: $index, $key');
+      },
+      onComplete: (index, key) {
+        print('onComplete: $index, $key');
+      },
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -48,7 +64,12 @@ class MyApp extends StatelessWidget {
             textTheme: TextTheme(headline6: TextStyle(color: Colors.white))),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      //home: MyHomePage(title: '다잇다'),
+
+      home: ShowCaseWidget(
+        builder: Builder(
+          builder: (context) => MyHomePage(title: '다잇다'),
+        ),
+      ),
     );
   }
 }
@@ -61,9 +82,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int count = 0;
+  GlobalKey _one = GlobalKey();
+  GlobalKey _two = GlobalKey();
+  GlobalKey _three = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => ShowCaseWidget.of(context).startShowCase([_one, _two, _three]));
+  }
+
+  int count = 12;
   List<bool> a = [
-    false,
+    true,
     true,
     true,
     true,
@@ -85,10 +117,10 @@ class _MyHomePageState extends State<MyHomePage> {
             opacity: a[numb] ? 1 : 0.5,
             child: Container(
               width: PHONESIZE_WIDTH / 4 - 5,
-              height: 150,
+              height: 130,
               child: Container(
                   width: (PHONESIZE_WIDTH / 4) - 30,
-                  height: 140,
+                  height: 120,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -115,7 +147,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2),
                       ),
-                      Container(height: 12),
                     ],
                   )),
             )),
@@ -207,38 +238,70 @@ class _MyHomePageState extends State<MyHomePage> {
             elevation: 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(left: 30, top: 20, bottom: 10),
-                  child: Text('뭐 먹을까?',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Theme.of(context).accentColor)),
-                ),
-                Wrap(
-                  alignment: WrapAlignment.spaceEvenly,
-                  children: [
-                    guideButton("전체", "images/theme/koreanfood.png", 0),
-                    guideButton("한식", "images/theme/koreanfood.png", 1),
-                    guideButton("분식", "images/theme/gimbap.png", 2),
-                    guideButton("카페", "images/theme/cafe.png", 3),
-                    guideButton("돈가스/회/일식", "images/theme/sushi.png", 4),
-                    guideButton("치킨", "images/theme/chicken.png", 5),
-                    guideButton("피자", "images/theme/pizza.png", 6),
-                    guideButton("아시안", "images/theme/asianfood.png", 7),
-                    guideButton("양식", "images/theme/spaguetti.png", 8),
-                    guideButton("중국집", "images/theme/chinesefood.png", 9),
-                    guideButton("찜/탕", "images/theme/cooking.png", 10),
-                    guideButton("패스트푸드", "images/theme/frenchfries.png", 11),
-                    guideButton("술", "images/theme/beer.png", 12),
-                  ],
-                ),
+                    padding: EdgeInsets.only(left: 20, top: 20, bottom: 10),
+                    child: Row(
+                      children: [
+                        Showcase(
+                          key: _one,
+                          child: Container(
+                            child: Text('뭐 먹을까?',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Theme.of(context).accentColor)),
+                          ),
+                          description: "test",
+                        )
+                      ],
+                    )),
+                Stack(children: [
+                  Wrap(
+                    alignment: WrapAlignment.spaceEvenly,
+                    children: [
+                      Showcase(
+                        key: _three,
+                        child:
+                            guideButton("전체", "images/theme/koreanfood.png", 0),
+                        description: 'test',
+                      ),
+                      guideButton("한식", "images/theme/koreanfood.png", 1),
+                      guideButton("분식", "images/theme/gimbap.png", 2),
+                      guideButton("카페", "images/theme/cafe.png", 3),
+                      guideButton("돈가스/회/일식", "images/theme/sushi.png", 4),
+                      guideButton("치킨", "images/theme/chicken.png", 5),
+                      guideButton("피자", "images/theme/pizza.png", 6),
+                      guideButton("아시안", "images/theme/asianfood.png", 7),
+                      guideButton("양식", "images/theme/spaguetti.png", 8),
+                      guideButton("중국집", "images/theme/chinesefood.png", 9),
+                      guideButton("찜/탕", "images/theme/cooking.png", 10),
+                      guideButton("패스트푸드", "images/theme/frenchfries.png", 11),
+                      guideButton("술", "images/theme/beer.png", 12),
+                    ],
+                  ),
+                  Showcase.withWidget(
+                    key: _two,
+                    child: backShowCase(),
+                    description: 'test',
+                  ),
+                ]),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget backShowCase() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 190,
+        )
+      ],
     );
   }
 }
