@@ -21,6 +21,8 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  shared_preferences: ^2.0.5
+  showcaseview: ^0.1.6
   font_awesome_flutter: ^8.8.1
   toggle_switch: "^0.1.9"
   lite_rolling_switch: ^0.1.1
