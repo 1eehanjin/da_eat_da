@@ -95,7 +95,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   GlobalKey _one = GlobalKey();
   GlobalKey _two = GlobalKey();
   GlobalKey _three = GlobalKey();
-
   GlobalKey _four = GlobalKey();
 
   BuildContext myContext;
@@ -107,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-
+    //myContext = context;
     for(int i = 0; i < 13; i++) {
       _animationController.add(AnimationController(
           duration: Duration(milliseconds: 600,), vsync: this
@@ -125,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _isFirstLaunch().then((result) {
         if (result)
-          ShowCaseWidget.of(myContext)
+          ShowCaseWidget.of(context)
               .startShowCase([_one, _two, _three, _four]);
       });
     });
@@ -376,40 +375,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 //                       guideButton("술", "images/theme/beer.png", 12),
 //                     ],
 // =======
-      // floatingActionButton:
-      // MaterialButton(
-      //   onPressed: () {
-      //     Get.to(() => MapView(),transition:  Transition.fadeIn );
-      //   },
-      //   child: Hero(tag: "Button1",
-      //       child: Container(
-      //         width: 200, height: 60,
-      //           decoration: BoxDecoration(
-      //           color: Theme.of(context).accentColor,
-      //           borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20),topRight: Radius.circular(20)),
-      //           boxShadow: [
-      //             BoxShadow(
-      //                 blurRadius: 8,
-      //                 offset: Offset(0, 15),
-      //                 color: Theme.of(context).accentColor.withOpacity(.6),
-      //                 spreadRadius: -9)
-      //           ]),
-      //         child: Row(mainAxisAlignment: MainAxisAlignment.center,
-      //           children: [
-      //             Icon(
-      //               Icons.map,
-      //               color: Colors.white,),
-      //               Text(
-      //                 "Go!",
-      //                 style: TextStyle(color: Colors.white),
-      //               ),
-      //           ],
-      //         )
-      //       ),
-      //
-      //
-      //   ),
-      // ),
+
       body: Stack(
         children: [
 
@@ -507,41 +473,48 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               onPressed: () {
                 Get.to(() => MapView(),transition:  Transition.fadeIn );
               },
-              child: Hero(tag: "Button1",
-                child: Container(
-                    width: Get.width * 0.75, height: 70,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20),),
-                        boxShadow: [
-                          BoxShadow(
-                              blurRadius: 8,
-                              offset: Offset(0, 15),
-                              color: Theme.of(context).primaryColor.withOpacity(.6),
-                              spreadRadius: -9)
-                        ]),
-                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+              child:
+                Showcase(
+                  key: _four,
+                  showArrow: false,
+                  description: 'test121212121212121',
 
-                        Padding(
-                          padding: EdgeInsets.only(left: PHONESIZE_WIDTH * 0.15),
-                          child: Text(
-                            "결정해 드릴게요!",
-                            style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                child: Hero(tag: "Button1",
+                  child: Container(
+                      width: Get.width * 0.75, height: 70,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20),),
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 8,
+                                offset: Offset(0, 15),
+                                color: Theme.of(context).primaryColor.withOpacity(.6),
+                                spreadRadius: -9)
+                          ]),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
 
+                          Padding(
+                            padding: EdgeInsets.only(left: PHONESIZE_WIDTH * 0.15),
+                            child: Text(
+                              "결정해 드릴게요!",
+                              style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.black,),
-                        ),
-                      ],
-                    )
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10.0),
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.black,),
+                          ),
+                        ],
+                      )
+                  ),
+
+
                 ),
-
-
               ),
             ),
           ),
