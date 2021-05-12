@@ -10,6 +10,7 @@ import 'ResultView.dart';
 import 'mapView.dart';
 import 'package:showcaseview/showcase.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
@@ -76,6 +77,10 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
+
+  static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
+      'PREFERENCES_IS_FIRST_LAUNCH_STRING';
+
   final String title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -85,12 +90,37 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey _one = GlobalKey();
   GlobalKey _two = GlobalKey();
   GlobalKey _three = GlobalKey();
+  GlobalKey _four = GlobalKey();
+
+  BuildContext myContext;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => ShowCaseWidget.of(context).startShowCase([_one, _two, _three]));
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) =>
+    //     ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isFirstLaunch().then((result) {
+        if (result)
+          ShowCaseWidget.of(myContext)
+              .startShowCase([_one, _two, _three, _four]);
+      });
+    });
+  }
+
+  Future<bool> _isFirstLaunch() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    bool isFirstLaunch = sharedPreferences
+            .getBool(MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING) ??
+        true;
+
+    if (isFirstLaunch)
+      sharedPreferences.setBool(
+          MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING, true);
+
+    return isFirstLaunch;
   }
 
   int count = 12;
@@ -182,7 +212,6 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           });
         });
-
   }
 
   @override
@@ -198,39 +227,28 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         centerTitle: true,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: "Button1",
-        icon: Icon(
-          Icons.map,
-          color: Colors.white,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Showcase(
+        key: _four,
+        showArrow: false,
+        description: 'test121212121212121',
+        child: FloatingActionButton.extended(
+          heroTag: "Button1",
+          icon: Icon(
+            Icons.map,
+            color: Colors.white,
+          ),
+          label: Text(
+            "Go!",
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () {
+            Get.to(MapView(), transition: Transition.fadeIn);
+          },
         ),
-        label: Text(
-          "Go!",
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          Get.to(MapView(), transition: Transition.fadeIn);
-        },
       ),
       body: ListView(
         children: [
-          Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
-              margin: EdgeInsets.all(10),
-              elevation: 2,
-              child: ListTile(
-                title: Text(
-                  "앱 사용 설명서",
-                  style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontWeight: FontWeight.bold),
-                ),
-                leading: Icon(
-                  Icons.book,
-                  color: Theme.of(context).accentColor,
-                ),
-              )),
           NativeAds(),
           Card(
             shape:
@@ -253,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     fontSize: 20,
                                     color: Theme.of(context).accentColor)),
                           ),
-                          description: "test",
+                          description: "test21212212121212",
                         )
                       ],
                     )),
@@ -263,9 +281,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       Showcase(
                         key: _three,
+                        showArrow: false,
                         child:
                             guideButton("전체", "images/theme/koreanfood.png", 0),
-                        description: 'test',
+                        description: 'test21211212121212',
                       ),
                       guideButton("한식", "images/theme/koreanfood.png", 1),
                       guideButton("분식", "images/theme/gimbap.png", 2),
@@ -284,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Showcase.withWidget(
                     key: _two,
                     child: backShowCase(),
-                    description: 'test',
+                    description: 'test1212212121211211',
                   ),
                 ]),
               ],
@@ -295,12 +314,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  //test
   Widget backShowCase() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          height: 190,
+          height: 130,
         )
       ],
     );
