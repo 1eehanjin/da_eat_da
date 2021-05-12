@@ -13,7 +13,7 @@ import 'mapView.dart';
 import 'package:showcaseview/showcase.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_color/flutter_color.dart';
 void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
   WidgetsFlutterBinding.ensureInitialized();
@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return isFirstLaunch;
   }
 
-  int count = 12;
+  int count = 0;
   List<bool> a = [
     false,
     false,
@@ -193,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(height: 10,),
-                        ClayContainer(color: a[numb] ? Theme.of(context).accentColor: Theme.of(context).backgroundColor,
+                        ClayContainer(color:Theme.of(context).accentColor.mix(Theme.of(context).backgroundColor, 1-_animationController[numb].value),
                           width: 75,
                           height: 75,
                           borderRadius: 20,
@@ -272,6 +272,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 } else {
                   reverseButtonAnimation(0);
                   a[0] = false;
+
 
                 }
               }
