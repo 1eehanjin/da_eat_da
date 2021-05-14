@@ -14,13 +14,14 @@ import 'package:showcaseview/showcase.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_color/flutter_color.dart';
+
 void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
   WidgetsFlutterBinding.ensureInitialized();
 
   /// Make sure to initialize the MobileAds sdk. It returns a future
   /// that will be completed as soon as it initializes
-  if(GetPlatform.isWeb == false) {
+  if (GetPlatform.isWeb == false) {
     await MobileAds.initialize();
     //MobileAds.setTestDeviceIds([]);
   }
@@ -87,6 +88,7 @@ class MyHomePage extends StatefulWidget {
       'PREFERENCES_IS_FIRST_LAUNCH_STRING';
 
   final String title;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -97,20 +99,34 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   GlobalKey _three = GlobalKey();
   GlobalKey _four = GlobalKey();
 
-  BuildContext myContext;
-
-
+  int count = 0;
+  double initialDepth = 50;
+  List<bool> buttonState = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
   List<AnimationController> _animationController = [];
-  double firstDepth = 50;
   List<double> calculatedDepth = [];
 
   @override
   void initState() {
-    //myContext = context;
-    for(int i = 0; i < 13; i++) {
+    for (int i = 0; i < 13; i++) {
       _animationController.add(AnimationController(
-          duration: Duration(milliseconds: 600,), vsync: this
-      )
+          duration: Duration(
+            milliseconds: 600,
+          ),
+          vsync: this)
         ..addListener(() {
           setState(() {});
         }));
@@ -118,14 +134,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     }
     super.initState();
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) =>
-    //     ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]));
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _isFirstLaunch().then((result) {
         if (result)
-          ShowCaseWidget.of(context)
-              .startShowCase([_one, _two, _three, _four]);
+          ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]);
       });
     });
   }
@@ -143,154 +155,106 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return isFirstLaunch;
   }
 
-  int count = 0;
-  List<bool> a = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
   double stagger(value, progress) {
     return value * (0.6 - progress);
   }
-  void reverseButtonAnimation(int number){
-    _animationController[number].forward();
+
+  void forwardButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].forward();
   }
-  void forwardButtonAnimation(int number){
-    _animationController[number].reverse();
+
+  void reverseButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].reverse();
   }
-  Widget guideButton(String name, String imageSource, int numb) {
-    double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
 
-
-    return Container(
-        width: 100,height: 130,
-      margin: EdgeInsets.only(bottom:25),
-      child: GestureDetector(
-          child: Opacity(
-              opacity: a[numb] ? 1 : 1,
-              // child: ClayContainer(
-    //   width: 100,height: 130,borderRadius: 20,
-    //   //surfaceColor: a[numb] ?Colors.grey[200]:Theme.of(context).backgroundColor,
-    //
-    //   //color: a[numb] ?Theme.of(context).accentColor:Theme.of(context).backgroundColor,
-    //   spread : 8,
-    //   depth: calculatedDepth[numb].toInt(),
-
-                child: Container(
-                    width: 100,
-                    height: 130,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(height: 10,),
-                        ClayContainer(color:Theme.of(context).accentColor.mix(Theme.of(context).backgroundColor, 1-_animationController[numb].value),
-                          width: 75,
-                          height: 75,
-                          borderRadius: 20,
-                          //surfaceColor: a[numb] ? Theme.of(context).accentColor : Theme.of(context).backgroundColor,
-                          //spread: a[numb] ? 4 : 8,color: Theme.of(context).backgroundColor,
-                          depth: calculatedDepth[numb].toInt(),
-                          child: Center(
-                              child: Image.asset(
-                                imageSource,
-                                width: 50,
-                                height: 60,
-                                fit: BoxFit.contain,
-                              )),
-                        ),
-                        // Container(
-                        //   width: 70,
-                        //   height: 70,
-                        //   decoration: BoxDecoration(
-                        //       shape: BoxShape.circle,
-                        //       color: Theme.of(context).backgroundColor),
-                        //   child: Center(
-                        //       child: Image.asset(
-                        //     imageSource,
-                        //     width: 50,
-                        //     height: 60,
-                        //     fit: BoxFit.contain,
-                        //   )),
-                        // ),
-                        Container(height: 12),
-                        Text(
-                          name,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: a[numb] ? Colors.black: Colors.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2),
-                        ),
-                      ],
-                    )),
-              //)
-          ),
-          onTap: () {
-            setState(() {
-              if (numb == 0) {
-                if (a[0] == false) {
-                  a[0] = true;
-                  reverseButtonAnimation(numb);
-                  for (int i = 1; i < a.length; i++) {
-                    a[i] = true;
-                    reverseButtonAnimation(i);
-                  }
-                  count = 12;
-                } else if (a[0] == true) {
-                  a[0] = false;
-                  forwardButtonAnimation(numb);
-                  for (int i = 1; i < a.length; i++) {
-                    a[i] = false;
-                    forwardButtonAnimation(i);
-                  }
-                  count = 0;
+  Widget guideButton(String name, String imageSource, int buttonNumber) {
+    return GestureDetector(
+        child: Container(
+            width: 100,
+            height: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: 10,
+                ),
+                ClayContainer(
+                  color: Theme.of(context).accentColor.mix(
+                      Theme.of(context).backgroundColor,
+                      1 - _animationController[buttonNumber].value),
+                  width: 75,
+                  height: 75,
+                  borderRadius: 20,
+                  depth: calculatedDepth[buttonNumber].toInt(),
+                  child: Center(
+                      child: Image.asset(
+                    imageSource,
+                    width: 50,
+                    height: 60,
+                    fit: BoxFit.contain,
+                  )),
+                ),
+                Container(height: 12),
+                Container(height: 40,
+                  child: Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2),
+                  ),
+                ),
+              ],
+            )),
+        onTap: () {
+          setState(() {
+            if (buttonNumber == 0) {
+              if (buttonState[0] == false) {
+                buttonState[0] = true;
+                forwardButtonAnimation(0);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = true;
+                  forwardButtonAnimation(i);
                 }
-              } else {
-                if (a[numb] == true) {
-                  forwardButtonAnimation(numb);
-                  a[numb] = false;
-                  count--;
-                } else {
-                  reverseButtonAnimation(numb);
-                  a[numb] = true;
-                  count++;
+                count = 12;
+              } else if (buttonState[0] == true) {
+                buttonState[0] = false;
+                reverseButtonAnimation(buttonNumber);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = false;
+                  reverseButtonAnimation(i);
                 }
-                if (count == 12) {
-                  forwardButtonAnimation(0);
-                  a[0] = true;
-
-                } else {
-                  reverseButtonAnimation(0);
-                  a[0] = false;
-
-
-                }
+                count = 0;
               }
-
-            });
-          }),
-    );
-
-
+            } else {
+              if (buttonState[buttonNumber] == true) {
+                reverseButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = false;
+                count--;
+              } else {
+                forwardButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = true;
+                count++;
+              }
+              if (count == 12) {
+                forwardButtonAnimation(0);
+                buttonState[0] = true;
+              } else {
+                reverseButtonAnimation(0);
+                buttonState[0] = false;
+              }
+            }
+          });
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    for(int i = 0; i < 13; i++){
-      calculatedDepth[i] = stagger(firstDepth, _animationController[i].value);
+    for (int i = 0; i < 13; i++) {
+      calculatedDepth[i] = stagger(initialDepth, _animationController[i].value);
     }
-
     double PHONESIZE_WIDTH = Get.width;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -376,71 +340,56 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 //                       guideButton("술", "images/theme/beer.png", 12),
 //                     ],
 // =======
-
       body: Stack(
         children: [
-
           ListView(
             children: [
-              // Card(
-              //     shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(15)),
-              //     margin: EdgeInsets.all(10),
-              //     child: ListTile(
-              //       title: Text(
-              //         "앱 사용 설명서",
-              //         style: TextStyle(
-              //             color: Theme.of(context).accentColor,
-              //             fontWeight: FontWeight.bold),
-              //       ),
-              //       leading: Icon(
-              //         Icons.book,
-              //         color: Theme.of(context).accentColor,
-              //       ),
-              //     )),
               //GetPlatform.isWeb ? Container(): NativeAds(),
               Container(
                   margin: EdgeInsets.only(left: 20, top: 20, bottom: 10),
-                  child:
-                  Showcase(
+                  child: Showcase(
                     key: _one,
                     child: Container(
-                      padding: EdgeInsets.only(top:50, bottom: 30, left:10),
+                      padding: EdgeInsets.only(top: 50, bottom: 30, left: 10),
                       child: RichText(
-                        text: TextSpan( text: '오늘의\n',
-                          style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold, color: Colors.black,height: 1.3 ),
+                        text: TextSpan(
+                          text: '오늘의\n',
+                          style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              height: 1.3),
                           children: <TextSpan>[
-                            TextSpan(text: '음식 테마', style: TextStyle(color: Colors.orangeAccent, fontSize: 30, fontWeight: FontWeight.bold)),
-                            TextSpan(text: '는?', style: TextStyle(color: Colors.black, fontSize: 30, fontWeight: FontWeight.bold)),
-
-                          ], ), ),
+                            TextSpan(
+                                text: '음식 테마',
+                                style: TextStyle(
+                                    color: Colors.orangeAccent,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: '는?',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
                     ),
                     description: "test",
-                  )
-
-              ),
+                  )),
               Container(
-                // decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.circular(25),
-                //     boxShadow: [
-                //       BoxShadow(
-                //           blurRadius: 8,
-                //           offset: Offset(0, 3),
-                //           color: Colors.grey[200].withOpacity(.6),
-                //           spreadRadius: 8)
-                //     ]),
-                // margin: EdgeInsets.all(10),padding: EdgeInsets.only(top: 30),
-
                 child: Stack(children: [
-                  Container(width: PHONESIZE_WIDTH,
+                  Container(
+                    width: PHONESIZE_WIDTH,
                     child: Wrap(
-                      alignment: WrapAlignment.spaceEvenly,spacing: 5,
+                      alignment: WrapAlignment.spaceEvenly,
+                      spacing: 5,
                       children: [
                         Showcase(
                           key: _three,
-                          child:
-                          guideButton("전체", "images/theme/koreanfood.png", 0),
+                          child: guideButton(
+                              "전체", "images/theme/koreanfood.png", 0),
                           description: 'test',
                         ),
                         guideButton("한식", "images/theme/koreanfood.png", 1),
@@ -453,11 +402,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         guideButton("양식", "images/theme/spaguetti.png", 8),
                         guideButton("중국집", "images/theme/chinesefood.png", 9),
                         guideButton("찜/탕", "images/theme/cooking.png", 10),
-                        guideButton("패스트푸드", "images/theme/frenchfries.png", 11),
+                        guideButton(
+                            "패스트푸드", "images/theme/frenchfries.png", 11),
                         guideButton("술", "images/theme/beer.png", 12),
                       ],
                     ),
-
                   ),
                   Showcase.withWidget(
                     key: _two,
@@ -466,55 +415,66 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                 ]),
               ),
+              Container(
+                height: 150,
+              )
             ],
           ),
           Positioned(
-            bottom: 50,right: 0,
-            child: MaterialButton(padding: EdgeInsets.all(0),
+            bottom: 50,
+            right: 0,
+            child: MaterialButton(
+              padding: EdgeInsets.all(0),
               onPressed: () {
-                Get.to(() => MapView(),transition:  Transition.fadeIn );
+                Get.to(() => MapView(), transition: Transition.fadeIn);
               },
-              child:
-                Showcase(
-                  key: _four,
-                  showArrow: false,
-                  description: 'test121212121212121',
-
-                child: Hero(tag: "Button1",
+              child: Showcase(
+                key: _four,
+                showArrow: false,
+                description: 'test121212121212121',
+                child: Hero(
+                  tag: "Button1",
                   child: Container(
-                      width: Get.width * 0.75, height: 70,
+                      width: Get.width * 0.75,
+                      height: 70,
                       decoration: BoxDecoration(
                           color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20),),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                          ),
                           boxShadow: [
                             BoxShadow(
                                 blurRadius: 8,
                                 offset: Offset(0, 15),
-                                color: Theme.of(context).primaryColor.withOpacity(.6),
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(.6),
                                 spreadRadius: -9)
                           ]),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-
                           Padding(
-                            padding: EdgeInsets.only(left: PHONESIZE_WIDTH * 0.15),
+                            padding:
+                                EdgeInsets.only(left: PHONESIZE_WIDTH * 0.15),
                             child: Text(
                               "결정해 드릴게요!",
-                              style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(right: 10.0),
                             child: Icon(
                               Icons.arrow_forward_ios,
-                              color: Colors.black,),
+                              color: Colors.black,
+                            ),
                           ),
                         ],
-                      )
-                  ),
-
-
+                      )),
                 ),
               ),
             ),
@@ -524,7 +484,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
-  //test
   Widget backShowCase() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -536,5 +495,3 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 }
-
-
