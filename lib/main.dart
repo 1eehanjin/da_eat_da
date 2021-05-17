@@ -12,6 +12,7 @@ import 'mapView.dart';
 import 'package:showcaseview/showcase.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_color/flutter_color.dart';
 
 void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
@@ -86,6 +87,7 @@ class MyHomePage extends StatefulWidget {
       'PREFERENCES_IS_FIRST_LAUNCH_STRING';
 
   final String title;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -96,14 +98,13 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey _three = GlobalKey();
   GlobalKey _four = GlobalKey();
 
-  BuildContext myContext;
+
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-        ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]));
+    
 
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   _isFirstLaunch().then((result) {
@@ -112,6 +113,50 @@ class _MyHomePageState extends State<MyHomePage> {
     //           .startShowCase([_one, _two, _three, _four]);
     //   });
     // });
+  int count = 0;
+  double initialDepth = 50;
+  List<bool> buttonState = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  List<AnimationController> _animationController = [];
+  List<double> calculatedDepth = [];
+
+  @override
+  void initState() {
+    for (int i = 0; i < 13; i++) {
+      _animationController.add(AnimationController(
+          duration: Duration(
+            milliseconds: 600,
+          ),
+          vsync: this)
+        ..addListener(() {
+          setState(() {});
+        }));
+      calculatedDepth.add(50);
+    }
+    super.initState();
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _isFirstLaunch().then((result) {
+//         if (result)
+//           ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]);
+//       });
+//     });
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]));
+
   }
 
   Future<bool> _isFirstLaunch() async {
@@ -127,91 +172,97 @@ class _MyHomePageState extends State<MyHomePage> {
     return isFirstLaunch;
   }
 
-  int count = 12;
-  List<bool> a = [
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-  ];
+  double stagger(value, progress) {
+    return value * (0.6 - progress);
+  }
 
-  Widget guideButton(String name, String imageSource, int numb) {
-    double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
-    return InkWell(
-        child: Opacity(
-            opacity: a[numb] ? 1 : 0.5,
-            child: Container(
-              width: PHONESIZE_WIDTH / 4 - 5,
-              height: 130,
-              child: Container(
-                  width: (PHONESIZE_WIDTH / 4) - 30,
-                  height: 120,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context).backgroundColor),
-                        child: Center(
-                            child: Image.asset(
-                          imageSource,
-                          width: 50,
-                          height: 60,
-                          fit: BoxFit.contain,
-                        )),
-                      ),
-                      Container(height: 12),
-                      Text(
-                        name,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2),
-                      ),
-                    ],
+  void forwardButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].forward();
+  }
+
+  void reverseButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].reverse();
+  }
+
+  Widget guideButton(String name, String imageSource, int buttonNumber) {
+    return GestureDetector(
+        child: Container(
+            width: 100,
+            height: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: 10,
+                ),
+                ClayContainer(
+                  color: Theme.of(context).accentColor.mix(
+                      Theme.of(context).backgroundColor,
+                      1 - _animationController[buttonNumber].value),
+                  width: 75,
+                  height: 75,
+                  borderRadius: 20,
+                  depth: calculatedDepth[buttonNumber].toInt(),
+                  child: Center(
+                      child: Image.asset(
+                    imageSource,
+                    width: 50,
+                    height: 60,
+                    fit: BoxFit.contain,
                   )),
+                ),
+                Container(height: 12),
+                Container(height: 40,
+                  child: Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2),
+                  ),
+                ),
+              ],
             )),
         onTap: () {
           setState(() {
-            if (numb == 0) {
-              if (a[numb] == false) {
-                a[numb] = !a[numb];
-                for (int i = 1; i < a.length; i++) {
-                  a[i] = a[numb];
+            if (buttonNumber == 0) {
+              if (buttonState[0] == false) {
+                buttonState[0] = true;
+                forwardButtonAnimation(0);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = true;
+                  forwardButtonAnimation(i);
                 }
                 count = 12;
-              } else if (a[numb] == true) {
-                a[numb] = !a[numb];
-                for (int i = 1; i < a.length; i++) {
-                  a[i] = a[numb];
+              } else if (buttonState[0] == true) {
+                buttonState[0] = false;
+                reverseButtonAnimation(buttonNumber);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = false;
+                  reverseButtonAnimation(i);
                 }
                 count = 0;
               }
             } else {
-              if (a[numb] == true) {
-                a[numb] = !a[numb];
+
+              if (buttonState[buttonNumber] == true) {
+                reverseButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = false;
                 count--;
-              } else if (a[numb] == false) {
-                a[numb] = !a[numb];
+              } else {
+                forwardButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = true;
                 count++;
               }
               if (count == 12) {
-                a[0] = true;
+                forwardButtonAnimation(0);
+                buttonState[0] = true;
               } else {
-                a[0] = false;
+                reverseButtonAnimation(0);
+                buttonState[0] = false;
+
               }
             }
           });
@@ -220,70 +271,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    for (int i = 0; i < 13; i++) {
+      calculatedDepth[i] = stagger(initialDepth, _animationController[i].value);
+    }
     double PHONESIZE_WIDTH = Get.width;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      // floatingActionButton:
-      // MaterialButton(
-      //   onPressed: () {
-      //     Get.to(() => MapView(),transition:  Transition.fadeIn );
-      //   },
-      //   child: Hero(tag: "Button1",
-      //       child: Container(
-      //         width: 200, height: 60,
-      //           decoration: BoxDecoration(
-      //           color: Theme.of(context).accentColor,
-      //           borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20),topRight: Radius.circular(20)),
-      //           boxShadow: [
-      //             BoxShadow(
-      //                 blurRadius: 8,
-      //                 offset: Offset(0, 15),
-      //                 color: Theme.of(context).accentColor.withOpacity(.6),
-      //                 spreadRadius: -9)
-      //           ]),
-      //         child: Row(mainAxisAlignment: MainAxisAlignment.center,
-      //           children: [
-      //             Icon(
-      //               Icons.map,
-      //               color: Colors.white,),
-      //               Text(
-      //                 "Go!",
-      //                 style: TextStyle(color: Colors.white),
-      //               ),
-      //           ],
-      //         )
-      //       ),
-      //
-      //
-      //   ),
-      // ),
       body: Stack(
         children: [
           ListView(
             children: [
-              // Card(
-              //     shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(15)),
-              //     margin: EdgeInsets.all(10),
-              //     child: ListTile(
-              //       title: Text(
-              //         "앱 사용 설명서",
-              //         style: TextStyle(
-              //             color: Theme.of(context).accentColor,
-              //             fontWeight: FontWeight.bold),
-              //       ),
-              //       leading: Icon(
-              //         Icons.book,
-              //         color: Theme.of(context).accentColor,
-              //       ),
-              //     )),
               //GetPlatform.isWeb ? Container(): NativeAds(),
               Container(
                   margin: EdgeInsets.only(left: 20, top: 20, bottom: 10),
                   child: Showcase(
                     key: _one,
                     child: Container(
-                      padding: EdgeInsets.only(top: 40, bottom: 10, left: 10),
+
+                      padding: EdgeInsets.only(top: 50, bottom: 30, left: 10),
+
                       child: RichText(
                         text: TextSpan(
                           text: '오늘의\n',
@@ -296,7 +303,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             TextSpan(
                                 text: '음식 테마',
                                 style: TextStyle(
-                                    color: Colors.amber,
+                                    color: Colors.orangeAccent,
+
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold)),
                             TextSpan(
@@ -364,9 +372,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         // ),
                       ]),
                     ],
+
                   ),
                 ),
               ),
+              Container(
+                height: 150,
+              )
             ],
           ),
           Positioned(
@@ -380,13 +392,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Get.to(() => MapView(), transition: Transition.fadeIn);
                 },
+
                 child: Hero(
                   tag: "Button1",
                   child: Container(
                       width: Get.width * 0.75,
                       height: 70,
                       decoration: BoxDecoration(
-                          color: Theme.of(context).accentColor,
+                          color: Theme.of(context).primaryColor,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(20),
                             bottomLeft: Radius.circular(20),
@@ -396,7 +409,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 blurRadius: 8,
                                 offset: Offset(0, 15),
                                 color: Theme.of(context)
-                                    .accentColor
+                                    .primaryColor
                                     .withOpacity(.6),
                                 spreadRadius: -9)
                           ]),
@@ -432,7 +445,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  //test
   Widget backShowCase() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
