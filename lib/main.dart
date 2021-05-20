@@ -1,16 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clay_containers/widgets/clay_container.dart';
+import 'package:da_eat_da/AdWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:native_admob_flutter/native_admob_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:showcaseview/showcaseview.dart';
-import 'NativeAds.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
 import 'package:showcaseview/showcase.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_color/flutter_color.dart';
 
@@ -21,7 +20,7 @@ void main() async {
   /// Make sure to initialize the MobileAds sdk. It returns a future
   /// that will be completed as soon as it initializes
   if (GetPlatform.isWeb == false) {
-    await MobileAds.initialize();
+    MobileAds.instance.initialize();
     //MobileAds.setTestDeviceIds([]);
   }
 
@@ -73,7 +72,7 @@ class MyApp extends StatelessWidget {
 
       home: ShowCaseWidget(
         builder: Builder(
-          builder: (context) => MyHomePage(title: '다잇다'),
+          builder: (context) => MyHomePage(),
         ),
       ),
     );
@@ -81,12 +80,12 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key}) : super(key: key);
 
   static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
       'PREFERENCES_IS_FIRST_LAUNCH_STRING';
 
-  final String title;
+
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -278,167 +277,134 @@ class _MyHomePageState extends State<MyHomePage> {
     double PHONESIZE_WIDTH = Get.width;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: Stack(
+
+      body: Column(
         children: [
-          ListView(
-            children: [
-              //GetPlatform.isWeb ? Container(): NativeAds(),
-              Container(
-                  margin: EdgeInsets.only(left: 20, top: 20, bottom: 10),
-                  child: Showcase(
-                    key: _one,
-                    child: Container(
-
-                      padding: EdgeInsets.only(top: 50, bottom: 30, left: 10),
-
-                      child: RichText(
-                        text: TextSpan(
-                          text: '오늘의\n',
-                          style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              height: 1.3),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: '음식 테마',
-                                style: TextStyle(
-                                    color: Colors.orangeAccent,
-
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold)),
-                            TextSpan(
-                                text: '는?',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold)),
-                          ],
+          Expanded(
+            child: ListView(
+              children: [
+                Container(
+                    margin: EdgeInsets.only(left: 20, top: 20, bottom: 10),
+                    child: Showcase(
+                      key: _one,
+                      child: Container(
+                        padding: EdgeInsets.only(top: 50, bottom: 30, left: 10),
+                        child: RichText(
+                          text: TextSpan(
+                            text: '오늘의\n',
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                height: 1.3),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: '음식 테마',
+                                  style: TextStyle(
+                                      color: Colors.orangeAccent,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: '는?',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
                       ),
+                      description: "test",
+                    )),
+                Container(
+                  child: Stack(children: [
+                    Container(
+                      width: PHONESIZE_WIDTH,
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceEvenly,
+                        spacing: 5,
+                        children: [
+                          Showcase(
+                            key: _three,
+                            child: guideButton(
+                                "전체", "images/theme/koreanfood.png", 0),
+                            description: 'test',
+                          ),
+                          guideButton("한식", "images/theme/koreanfood.png", 1),
+                          guideButton("분식", "images/theme/gimbap.png", 2),
+                          guideButton("카페", "images/theme/cafe.png", 3),
+                          guideButton("돈가스/회/일식", "images/theme/sushi.png", 4),
+                          guideButton("치킨", "images/theme/chicken.png", 5),
+                          guideButton("피자", "images/theme/pizza.png", 6),
+                          guideButton("아시안", "images/theme/asianfood.png", 7),
+                          guideButton("양식", "images/theme/spaguetti.png", 8),
+                          guideButton("중국집", "images/theme/chinesefood.png", 9),
+                          guideButton("찜/탕", "images/theme/cooking.png", 10),
+                          guideButton(
+                              "패스트푸드", "images/theme/frenchfries.png", 11),
+                          guideButton("술", "images/theme/beer.png", 12),
+                        ],
+                      ),
                     ),
-                    description: "test",
-                  )),
-              Showcase(
-                key: _two,
-                description: 'test1212121212121212',
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                            blurRadius: 8,
-                            offset: Offset(0, 3),
-                            color: Colors.grey[200].withOpacity(.6),
-                            spreadRadius: 8)
-                      ]),
-                  margin: EdgeInsets.all(10),
-                  padding: EdgeInsets.only(top: 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Stack(children: [
-                        Wrap(
-                          alignment: WrapAlignment.spaceEvenly,
-                          children: [
-                            Showcase(
-                              key: _three,
-                              child: guideButton(
-                                  "전체", "images/theme/koreanfood.png", 0),
-                              description: 'test',
-                            ),
-                            guideButton("한식", "images/theme/koreanfood.png", 1),
-                            guideButton("분식", "images/theme/gimbap.png", 2),
-                            guideButton("카페", "images/theme/cafe.png", 3),
-                            guideButton(
-                                "돈가스/회/일식", "images/theme/sushi.png", 4),
-                            guideButton("치킨", "images/theme/chicken.png", 5),
-                            guideButton("피자", "images/theme/pizza.png", 6),
-                            guideButton("아시안", "images/theme/asianfood.png", 7),
-                            guideButton("양식", "images/theme/spaguetti.png", 8),
-                            guideButton(
-                                "중국집", "images/theme/chinesefood.png", 9),
-                            guideButton("찜/탕", "images/theme/cooking.png", 10),
-                            guideButton(
-                                "패스트푸드", "images/theme/frenchfries.png", 11),
-                            guideButton("술", "images/theme/beer.png", 12),
-                          ],
-                        ),
-                        // Showcase.withWidget(
-                        //   key: _two,
-                        //   child: backShowCase(),
-                        //   description: 'test',
-                        // ),
-                      ]),
-                    ],
 
-                  ),
+                    Showcase.withWidget(
+                      key: _two,
+                      child: backShowCase(),
+                      description: 'test1212212121211211',
+                    ),
+                  ]),
                 ),
-              ),
-              Container(
-                height: 150,
-              )
-            ],
+                Container(
+                  height: 150,
+                )
+              ],
+            ),
           ),
-          Positioned(
-            bottom: 50,
-            right: 0,
-            child: Showcase(
-              key: _four,
-              description: 'test12323214144',
-              child: MaterialButton(
+          Column(crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              MaterialButton(
+
                 padding: EdgeInsets.all(0),
                 onPressed: () {
                   Get.to(() => MapView(), transition: Transition.fadeIn);
                 },
 
-                child: Hero(
-                  tag: "Button1",
-                  child: Container(
-                      width: Get.width * 0.75,
-                      height: 70,
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: 8,
-                                offset: Offset(0, 15),
-                                color: Theme.of(context)
-                                    .primaryColor
-                                    .withOpacity(.6),
-                                spreadRadius: -9)
-                          ]),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.only(left: PHONESIZE_WIDTH * 0.15),
-                            child: Text(
-                              "결정해 드릴게요!",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 0.0),
-                            child: Icon(
-                              Icons.arrow_forward_ios,
+                child: Showcase(
+                  key: _four,
+                  showArrow: false,
+                  description: 'test121212121212121',
+                  child: Hero(
+                    tag: "Button1",
+                    child: Container(
+                        width: Get.width,alignment: Alignment.center,
+                        height: 70,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 8,
+                                  offset: Offset(0, 15),
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(.6),
+                                  spreadRadius: -9)
+                            ]),
+                        child: Text(
+                          "결정해 드릴게요!",
+                          style: TextStyle(
                               color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      )),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),),
+                  ),
                 ),
               ),
-            ),
+              Container(width: PHONESIZE_WIDTH,
+                child: BannerAdWidget(AdSize.banner),
+              ),
+
+            ],
           ),
         ],
       ),
