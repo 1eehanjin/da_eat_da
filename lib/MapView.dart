@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:da_eat_da/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,10 @@ import 'package:geolocator/geolocator.dart';
 class MapView extends StatefulWidget {
   @override
   _MapViewState createState() => _MapViewState();
+}
+
+class Getlatlng {
+  double lat = (Get.arguments as Sendlatlng).lat;
 }
 
 class _MapViewState extends State<MapView> {
@@ -63,8 +68,10 @@ class _MapViewState extends State<MapView> {
               child: GoogleMap(
                 mapType: MapType.normal,
                 myLocationEnabled: true,
-                initialCameraPosition:
-                    CameraPosition(target: LatLng(40, 40), zoom: 14),
+                initialCameraPosition: CameraPosition(
+                    target: LatLng((Get.arguments as Sendlatlng).lat,
+                        (Get.arguments as Sendlatlng).lng),
+                    zoom: 14),
               ),
             ),
             Container(
