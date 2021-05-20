@@ -9,6 +9,9 @@ import 'ResultView.dart';
 import 'mapView.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:async';
 
 void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
@@ -16,16 +19,35 @@ void main() async {
 
   /// Make sure to initialize the MobileAds sdk. It returns a future
   /// that will be completed as soon as it initializes
-  if(GetPlatform.isWeb == false) {
+  if (GetPlatform.isWeb == false) {
     await MobileAds.initialize();
   }
 
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+Position position;
+
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
   @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String selectedAddress;
+
+  @override
+  void initState() {
+    super.initState();
+    _setInitialPostion();
+  }
+
+  _setInitialPostion() async {
+    position = await Geolocator.getCurrentPosition();
+    setState(() {});
+  }
+
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: '/home',
@@ -60,6 +82,12 @@ class MyHomePage extends StatefulWidget {
   final String title;
   @override
   _MyHomePageState createState() => _MyHomePageState();
+}
+
+class Sendlatlng {
+  double lat;
+  double lng;
+  Sendlatlng({this.lat, this.lng});
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -153,7 +181,6 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           });
         });
-
   }
 
   @override
@@ -180,7 +207,10 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(color: Colors.white),
         ),
         onPressed: () {
-          Get.to(MapView(), transition: Transition.fadeIn);
+          Get.to(MapView(),
+              transition: Transition.fadeIn,
+              arguments:
+                  Sendlatlng(lat: position.latitude, lng: position.longitude));
         },
       ),
       body: ListView(
@@ -202,8 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Theme.of(context).accentColor,
                 ),
               )),
-          GetPlatform.isWeb ? Container():
-          NativeAds(),
+          GetPlatform.isWeb ? Container() : NativeAds(),
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
