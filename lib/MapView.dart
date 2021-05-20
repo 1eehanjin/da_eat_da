@@ -61,6 +61,7 @@ class _MapViewState extends State<MapView> {
           children: [
             Container(
               height: MediaQuery.of(context).size.height,
+
               child: GoogleMap(
                 mapType: MapType.normal,
                 myLocationEnabled: true,

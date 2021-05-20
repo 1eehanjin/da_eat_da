@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clay_containers/widgets/clay_container.dart';
+import 'package:da_eat_da/AdWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:native_admob_flutter/native_admob_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -12,6 +14,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
+import 'package:showcaseview/showcase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_color/flutter_color.dart';
 
 void main() async {
   /// Make sure you add this line here, so the plugin can access the native side
@@ -20,10 +25,26 @@ void main() async {
   /// Make sure to initialize the MobileAds sdk. It returns a future
   /// that will be completed as soon as it initializes
   if (GetPlatform.isWeb == false) {
-    await MobileAds.initialize();
+    MobileAds.instance.initialize();
+    //MobileAds.setTestDeviceIds([]);
   }
 
-  runApp(MyApp());
+  runApp(
+    ShowCaseWidget(
+      autoPlay: false,
+      autoPlayDelay: Duration(seconds: 8),
+      autoPlayLockEnable: false,
+      builder: Builder(
+        builder: (context) => MyApp(),
+      ),
+      onStart: (index, key) {
+        print('onStart: $index, $key');
+      },
+      onComplete: (index, key) {
+        print('onComplete: $index, $key');
+      },
+    ),
+  );
 }
 
 Position position;
@@ -66,20 +87,30 @@ class _MyAppState extends State<MyApp> {
       title: '다잇다',
       theme: ThemeData(
         primaryColor: Colors.orangeAccent,
-        backgroundColor: Colors.orange[50],
+        backgroundColor: Colors.grey[100],
         accentColor: Colors.orangeAccent,
         appBarTheme: AppBarTheme(
             textTheme: TextTheme(headline6: TextStyle(color: Colors.white))),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      //home: MyHomePage(title: '다잇다'),
+
+      home: ShowCaseWidget(
+        builder: Builder(
+          builder: (context) => MyHomePage(),
+        ),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
+
+  static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
+      'PREFERENCES_IS_FIRST_LAUNCH_STRING';
+
+
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -91,92 +122,176 @@ class Sendlatlng {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int count = 0;
-  List<bool> a = [
-    false,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-    true,
-  ];
+  GlobalKey _one = GlobalKey();
+  GlobalKey _two = GlobalKey();
+  GlobalKey _three = GlobalKey();
+  GlobalKey _four = GlobalKey();
 
-  Widget guideButton(String name, String imageSource, int numb) {
-    double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
-    return InkWell(
-        child: Opacity(
-            opacity: a[numb] ? 1 : 0.5,
-            child: Container(
-              width: PHONESIZE_WIDTH / 4 - 5,
-              height: 150,
-              child: Container(
-                  width: (PHONESIZE_WIDTH / 4) - 30,
-                  height: 140,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context).backgroundColor),
-                        child: Center(
-                            child: Image.asset(
-                          imageSource,
-                          width: 50,
-                          height: 60,
-                          fit: BoxFit.contain,
-                        )),
-                      ),
-                      Container(height: 12),
-                      Text(
-                        name,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2),
-                      ),
-                      Container(height: 12),
-                    ],
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _isFirstLaunch().then((result) {
+    //     if (result)
+    //       ShowCaseWidget.of(myContext)
+    //           .startShowCase([_one, _two, _three, _four]);
+    //   });
+    // });
+  int count = 0;
+  double initialDepth = 50;
+  List<bool> buttonState = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  List<AnimationController> _animationController = [];
+  List<double> calculatedDepth = [];
+
+  @override
+  void initState() {
+    for (int i = 0; i < 13; i++) {
+      _animationController.add(AnimationController(
+          duration: Duration(
+            milliseconds: 600,
+          ),
+          vsync: this)
+        ..addListener(() {
+          setState(() {});
+        }));
+      calculatedDepth.add(50);
+    }
+    super.initState();
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _isFirstLaunch().then((result) {
+//         if (result)
+//           ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]);
+//       });
+//     });
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]));
+
+  }
+
+  Future<bool> _isFirstLaunch() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    bool isFirstLaunch = sharedPreferences
+            .getBool(MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING) ??
+        true;
+
+    if (!isFirstLaunch)
+      sharedPreferences.setBool(
+          MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING, false);
+
+    return isFirstLaunch;
+  }
+
+  double stagger(value, progress) {
+    return value * (0.6 - progress);
+  }
+
+  void forwardButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].forward();
+  }
+
+  void reverseButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].reverse();
+  }
+
+  Widget guideButton(String name, String imageSource, int buttonNumber) {
+    return GestureDetector(
+        child: Container(
+            width: 100,
+            height: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: 10,
+                ),
+                ClayContainer(
+                  color: Theme.of(context).accentColor.mix(
+                      Theme.of(context).backgroundColor,
+                      1 - _animationController[buttonNumber].value),
+                  width: 75,
+                  height: 75,
+                  borderRadius: 20,
+                  depth: calculatedDepth[buttonNumber].toInt(),
+                  child: Center(
+                      child: Image.asset(
+                    imageSource,
+                    width: 50,
+                    height: 60,
+                    fit: BoxFit.contain,
                   )),
+                ),
+                Container(height: 12),
+                Container(height: 40,
+                  child: Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2),
+                  ),
+                ),
+              ],
             )),
         onTap: () {
           setState(() {
-            if (numb == 0) {
-              if (a[numb] == false) {
-                a[numb] = !a[numb];
-                for (int i = 1; i < a.length; i++) {
-                  a[i] = a[numb];
+            if (buttonNumber == 0) {
+              if (buttonState[0] == false) {
+                buttonState[0] = true;
+                forwardButtonAnimation(0);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = true;
+                  forwardButtonAnimation(i);
                 }
                 count = 12;
-              } else if (a[numb] == true) {
-                a[numb] = !a[numb];
-                for (int i = 1; i < a.length; i++) {
-                  a[i] = a[numb];
+              } else if (buttonState[0] == true) {
+                buttonState[0] = false;
+                reverseButtonAnimation(buttonNumber);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = false;
+                  reverseButtonAnimation(i);
                 }
                 count = 0;
               }
             } else {
-              if (a[numb] == true) {
-                a[numb] = !a[numb];
+
+              if (buttonState[buttonNumber] == true) {
+                reverseButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = false;
                 count--;
-              } else if (a[numb] == false) {
-                a[numb] = !a[numb];
+              } else {
+                forwardButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = true;
                 count++;
               }
               if (count == 12) {
-                a[0] = true;
+                forwardButtonAnimation(0);
+                buttonState[0] = true;
               } else {
-                a[0] = false;
+                reverseButtonAnimation(0);
+                buttonState[0] = false;
+
               }
             }
           });
@@ -185,225 +300,157 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double PHONESIZE_WIDTH = MediaQuery.of(context).size.width;
+
+    for (int i = 0; i < 13; i++) {
+      calculatedDepth[i] = stagger(initialDepth, _animationController[i].value);
+    }
+    double PHONESIZE_WIDTH = Get.width;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(
-          "다잇다",
-        ),
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: "Button1",
-        icon: Icon(
-          Icons.map,
-          color: Colors.white,
-        ),
-        label: Text(
-          "Go!",
-          style: TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          Get.to(MapView(),
-              transition: Transition.fadeIn,
-              arguments:
-                  Sendlatlng(lat: position.latitude, lng: position.longitude));
-        },
-      ),
-      body: ListView(
+      body: Column(
         children: [
-          Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
-              margin: EdgeInsets.all(10),
-              elevation: 2,
-              child: ListTile(
-                title: Text(
-                  "앱 사용 설명서",
-                  style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontWeight: FontWeight.bold),
-                ),
-                leading: Icon(
-                  Icons.book,
-                  color: Theme.of(context).accentColor,
-                ),
-              )),
-          GetPlatform.isWeb ? Container() : NativeAds(),
-          Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            margin: EdgeInsets.all(10),
-            elevation: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Expanded(
+            child: ListView(
               children: [
                 Container(
-                  padding: EdgeInsets.only(left: 30, top: 20, bottom: 10),
-                  child: Text('뭐 먹을까?',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Theme.of(context).accentColor)),
+                    margin: EdgeInsets.only(left: 20, top: 20, bottom: 10),
+                    child: Showcase(
+                      key: _one,
+                      child: Container(
+                        padding: EdgeInsets.only(top: 50, bottom: 30, left: 10),
+                        child: RichText(
+                          text: TextSpan(
+                            text: '오늘의\n',
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                height: 1.3),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: '음식 테마',
+                                  style: TextStyle(
+                                      color: Colors.orangeAccent,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: '는?',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      description: "test",
+                    )),
+                Container(
+                  child: Stack(children: [
+                    Container(
+                      width: PHONESIZE_WIDTH,
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceEvenly,
+                        spacing: 5,
+                        children: [
+                          Showcase(
+                            key: _three,
+                            child: guideButton(
+                                "전체", "images/theme/koreanfood.png", 0),
+                            description: 'test',
+                          ),
+                          guideButton("한식", "images/theme/koreanfood.png", 1),
+                          guideButton("분식", "images/theme/gimbap.png", 2),
+                          guideButton("카페", "images/theme/cafe.png", 3),
+                          guideButton("돈가스/회/일식", "images/theme/sushi.png", 4),
+                          guideButton("치킨", "images/theme/chicken.png", 5),
+                          guideButton("피자", "images/theme/pizza.png", 6),
+                          guideButton("아시안", "images/theme/asianfood.png", 7),
+                          guideButton("양식", "images/theme/spaguetti.png", 8),
+                          guideButton("중국집", "images/theme/chinesefood.png", 9),
+                          guideButton("찜/탕", "images/theme/cooking.png", 10),
+                          guideButton(
+                              "패스트푸드", "images/theme/frenchfries.png", 11),
+                          guideButton("술", "images/theme/beer.png", 12),
+                        ],
+                      ),
+                    ),
+
+                    Showcase.withWidget(
+                      key: _two,
+                      child: backShowCase(),
+                      description: 'test1212212121211211',
+                    ),
+                  ]),
                 ),
-                Wrap(
-                  alignment: WrapAlignment.spaceEvenly,
-                  children: [
-                    guideButton("전체", "images/theme/koreanfood.png", 0),
-                    guideButton("한식", "images/theme/koreanfood.png", 1),
-                    guideButton("분식", "images/theme/gimbap.png", 2),
-                    guideButton("카페", "images/theme/cafe.png", 3),
-                    guideButton("돈가스/회/일식", "images/theme/sushi.png", 4),
-                    guideButton("치킨", "images/theme/chicken.png", 5),
-                    guideButton("피자", "images/theme/pizza.png", 6),
-                    guideButton("아시안", "images/theme/asianfood.png", 7),
-                    guideButton("양식", "images/theme/spaguetti.png", 8),
-                    guideButton("중국집", "images/theme/chinesefood.png", 9),
-                    guideButton("찜/탕", "images/theme/cooking.png", 10),
-                    guideButton("패스트푸드", "images/theme/frenchfries.png", 11),
-                    guideButton("술", "images/theme/beer.png", 12),
-                  ],
-                ),
+                Container(
+                  height: 150,
+                )
               ],
             ),
+          ),
+          Column(crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              MaterialButton(
+
+                padding: EdgeInsets.all(0),
+                onPressed: () {
+                    Get.to(MapView(),
+                        transition: Transition.fadeIn,
+                        arguments:
+                            Sendlatlng(lat: position.latitude, lng: position.longitude));
+                  },
+
+                child: Showcase(
+                  key: _four,
+                  showArrow: false,
+                  description: 'test121212121212121',
+                  child: Hero(
+                    tag: "Button1",
+                    child: Container(
+                        width: Get.width,alignment: Alignment.center,
+                        height: 70,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 8,
+                                  offset: Offset(0, 15),
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(.6),
+                                  spreadRadius: -9)
+                            ]),
+                        child: Text(
+                          "결정해 드릴게요!",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),),
+                  ),
+                ),
+              ),
+              Container(width: PHONESIZE_WIDTH,
+                child: BannerAdWidget(AdSize.banner),
+              ),
+
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class NativeAds extends StatefulWidget {
-  const NativeAds({Key key}) : super(key: key);
-
-  @override
-  _NativeAdsState createState() => _NativeAdsState();
-}
-
-class _NativeAdsState extends State<NativeAds>
-    with AutomaticKeepAliveClientMixin {
-  Widget child;
-
-  final controller = NativeAdController();
-
-  @override
-  void initState() {
-    super.initState();
-    controller.load();
-    controller.onEvent.listen((event) {
-      setState(() {});
-    });
+  Widget backShowCase() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 130,
+        )
+      ],
+    );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    if (child != null) return child;
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 0),
-        child: (controller.isLoaded)
-            ? NativeAd(
-                height: 300,
-                unitId: MobileAds.nativeAdVideoTestUnitId,
-                builder: (context, child) {
-                  return Material(
-                    //elevation: 3,
-                    child: child,
-                  );
-                },
-                buildLayout: fullBuilder,
-                loading: Container(
-                    height: 300,
-                    alignment: Alignment.center,
-                    child: Text('loading')),
-                error: Text('error'),
-                icon: AdImageView(size: 40),
-                headline: AdTextView(
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                  maxLines: 1,
-                ),
-                media: AdMediaView(
-                  height: 180,
-                  width: MATCH_PARENT,
-                  //elevation: 6,
-                  //elevationColor: Colors.deepOrangeAccent,
-                ),
-                attribution: AdTextView(
-                  width: WRAP_CONTENT,
-                  height: WRAP_CONTENT,
-                  padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0),
-                  margin: EdgeInsets.only(right: 4),
-                  maxLines: 1,
-                  text: 'Anúncio',
-                  decoration: AdDecoration(
-                    borderRadius: AdBorderRadius.all(10),
-                    border: BorderSide(color: Colors.orangeAccent, width: 1),
-                  ),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                button: AdButtonView(
-                  textStyle: TextStyle(color: Colors.white),
-                  decoration: AdDecoration(
-                      borderRadius: AdBorderRadius.all(50),
-                      backgroundColor: Colors.orangeAccent),
-                  height: MATCH_PARENT,
-                ),
-              )
-            : Container(
-                height: 300,
-                alignment: Alignment.center,
-                child: Text('loading')));
-  }
-
-  @override
-  bool get wantKeepAlive => true;
 }
-
-AdLayoutBuilder get fullBuilder => (ratingBar, media, icon, headline,
-        advertiser, body, price, store, attribuition, button) {
-      return AdLinearLayout(
-        padding: EdgeInsets.all(10),
-        // The first linear layout width needs to be extended to the
-        // parents height, otherwise the children won't fit good
-        width: MATCH_PARENT,
-        decoration: AdDecoration(
-            gradient: AdLinearGradient(
-          colors: [Colors.orange[50], Colors.orange[50]],
-          orientation: AdGradientOrientation.tl_br,
-        )),
-        children: [
-          media,
-          AdLinearLayout(
-            children: [
-              icon,
-              AdLinearLayout(children: [
-                headline,
-                AdLinearLayout(
-                  children: [attribuition, advertiser, ratingBar],
-                  orientation: HORIZONTAL,
-                  width: MATCH_PARENT,
-                ),
-              ], margin: EdgeInsets.only(left: 4)),
-            ],
-            gravity: LayoutGravity.center_horizontal,
-            width: WRAP_CONTENT,
-            orientation: HORIZONTAL,
-            margin: EdgeInsets.only(top: 6),
-          ),
-          AdLinearLayout(
-            children: [button],
-            orientation: HORIZONTAL,
-          ),
-        ],
-      );
-    };
