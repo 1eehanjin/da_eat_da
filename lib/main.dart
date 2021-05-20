@@ -9,8 +9,6 @@ import 'package:get/get.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
@@ -225,12 +223,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     borderRadius: 20,
                     depth: calculatedDepth[buttonNumber].toInt(),
                     child: Center(
-                        child: Image.asset(
+                        child: name != "전체" ?
+                        Image.asset(
                           imageSource,
                           width: 50,
                           height: 60,
                           fit: BoxFit.contain,
-                        )),
+                        )
+                            :
+                            Text(
+                              "All", style: TextStyle(color: Colors.orange, fontSize: 30, fontWeight: FontWeight.bold)
+                            )
+                    ),
                   ),
                   Container(height: 12),
                   Container(height: 40,
@@ -434,6 +438,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   ),
                 ),
                  Container(width: PHONESIZE_WIDTH,
+                   color: Colors.white,
                    child: BannerAdWidget(AdSize.banner),
                  ),
 
