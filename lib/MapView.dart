@@ -12,10 +12,6 @@ class MapView extends StatefulWidget {
   _MapViewState createState() => _MapViewState();
 }
 
-class Getlatlng {
-  double lat = (Get.arguments as Sendlatlng).lat;
-}
-
 class _MapViewState extends State<MapView> {
   @override
   Widget build(BuildContext context) {
