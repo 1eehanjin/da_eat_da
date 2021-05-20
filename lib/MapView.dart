@@ -61,8 +61,8 @@ class _MapViewState extends State<MapView> {
           children: [
             Container(
               height: MediaQuery.of(context).size.height,
-
               child: GoogleMap(
+                zoomControlsEnabled: false,
                 mapType: MapType.normal,
                 myLocationEnabled: true,
                 initialCameraPosition: CameraPosition(
@@ -71,22 +71,22 @@ class _MapViewState extends State<MapView> {
                     zoom: 14),
               ),
             ),
-            Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Color(0x99ffffff)),
-                        child: Icon(Icons.location_on,
-                            size: 50, color: Colors.amber)),
-                  ],
-                )),
+            // Container(
+            //     height: MediaQuery.of(context).size.height,
+            //     width: MediaQuery.of(context).size.width,
+            //     child: Column(
+            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //       crossAxisAlignment: CrossAxisAlignment.center,
+            //       children: [
+            //         Container(
+            //             width: 200,
+            //             height: 200,
+            //             decoration: BoxDecoration(
+            //                 shape: BoxShape.circle, color: Color(0x99ffffff)),
+            //             child: Icon(Icons.location_on,
+            //                 size: 50, color: Colors.amber)),
+            //       ],
+            //     )),
           ],
         ));
   }
