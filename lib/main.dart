@@ -47,7 +47,7 @@ void main() async {
   );
 }
 
-Position position;
+
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
@@ -57,17 +57,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String selectedAddress;
-
   @override
   void initState() {
     super.initState();
-    _setInitialPostion();
   }
 
-  _setInitialPostion() async {
-    position = await Geolocator.getCurrentPosition();
-    setState(() {});
-  }
+
 
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -86,9 +81,9 @@ class _MyAppState extends State<MyApp> {
       // },
       title: '다잇다',
       theme: ThemeData(
-        primaryColor: Colors.orangeAccent,
-        backgroundColor: Colors.grey[100],
-        accentColor: Colors.orangeAccent,
+        primaryColor: Colors.amber,
+        backgroundColor: Color(0xFFF2F2F2),
+        accentColor: Colors.orange[100],
         appBarTheme: AppBarTheme(
             textTheme: TextTheme(headline6: TextStyle(color: Colors.white))),
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -126,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   GlobalKey _two = GlobalKey();
   GlobalKey _three = GlobalKey();
   GlobalKey _four = GlobalKey();
-
+  Position position;
 
 
     int count = 0;
@@ -148,9 +143,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     ];
     List<AnimationController> _animationController = [];
     List<double> calculatedDepth = [];
+  _setInitialPosition() async {
+    position = await Geolocator.getCurrentPosition();
+    setState(() {});
+  }
 
     @override
     void initState() {
+    _setInitialPosition();
       for (int i = 0; i < 13; i++) {
         _animationController.add(AnimationController(
             duration: Duration(
@@ -390,11 +390,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
                   padding: EdgeInsets.all(0),
                   onPressed: () {
-                    Get.to(MapView(),
+                    Get.to(
+                        MapView(),
                         transition: Transition.fadeIn,
                         arguments:
                         Sendlatlng(
-                            lat: position.latitude, lng: position.longitude));
+                            lat: position != null ? position.latitude : 37.4500221, lng: position != null? position.longitude : 126.653488 ));
                   },
 
                   child: Showcase(
@@ -432,9 +433,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-                Container(width: PHONESIZE_WIDTH,
-                  child: BannerAdWidget(AdSize.banner),
-                ),
+                 Container(width: PHONESIZE_WIDTH,
+                   child: BannerAdWidget(AdSize.banner),
+                 ),
 
               ],
             ),
