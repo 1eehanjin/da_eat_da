@@ -9,6 +9,11 @@ import 'package:get/get.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:async';
 import 'package:showcaseview/showcase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_color/flutter_color.dart';
@@ -42,9 +47,28 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+Position position;
+
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
   @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  String selectedAddress;
+
+  @override
+  void initState() {
+    super.initState();
+    _setInitialPostion();
+  }
+
+  _setInitialPostion() async {
+    position = await Geolocator.getCurrentPosition();
+    setState(() {});
+  }
+
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: '/home',
@@ -89,6 +113,12 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
+}
+
+class Sendlatlng {
+  double lat;
+  double lng;
+  Sendlatlng({this.lat, this.lng});
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -277,7 +307,6 @@ class _MyHomePageState extends State<MyHomePage> {
     double PHONESIZE_WIDTH = Get.width;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-
       body: Column(
         children: [
           Expanded(
@@ -366,8 +395,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 padding: EdgeInsets.all(0),
                 onPressed: () {
-                  Get.to(() => MapView(), transition: Transition.fadeIn);
-                },
+                    Get.to(MapView(),
+                        transition: Transition.fadeIn,
+                        arguments:
+                            Sendlatlng(lat: position.latitude, lng: position.longitude));
+                  },
 
                 child: Showcase(
                   key: _four,

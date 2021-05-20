@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:da_eat_da/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'ResultView.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MapView extends StatefulWidget {
   @override
@@ -59,12 +61,15 @@ class _MapViewState extends State<MapView> {
           children: [
             Container(
               height: MediaQuery.of(context).size.height,
-              // child: GoogleMap(
-              //   mapType: MapType.normal,
-              //   myLocationEnabled: true,
-              //   initialCameraPosition:
-              //       CameraPosition(target: LatLng(40, 40), zoom: 14),
-              // ),
+
+              child: GoogleMap(
+                mapType: MapType.normal,
+                myLocationEnabled: true,
+                initialCameraPosition: CameraPosition(
+                    target: LatLng((Get.arguments as Sendlatlng).lat,
+                        (Get.arguments as Sendlatlng).lng),
+                    zoom: 14),
+              ),
             ),
             Container(
                 height: MediaQuery.of(context).size.height,
