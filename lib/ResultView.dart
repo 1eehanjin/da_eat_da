@@ -1,10 +1,15 @@
+import 'dart:math';
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:da_eat_da/UserData.dart';
 import 'package:da_eat_da/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_place/google_place.dart';
 
 class ResultView extends StatefulWidget {
   @override
@@ -12,8 +17,92 @@ class ResultView extends StatefulWidget {
 }
 
 class _ResultViewState extends State<ResultView> {
+  UserData userData = UserData(latitude: 37.4500221, longitude: 126.653488, radius: 500, restaurantTheme: ["중식", "한식", "일식"]);
+  var googlePlace = GooglePlace("AIzaSyBZD_3rrGlloGukFuHASvN5M10filFEims");
+  List<SearchResult> restaurantList = [];
+  SearchResult pickedRestaurant = null;
+  final _random = new Random();
+  Uint8List pickedRestaurantPhoto;
+
+  Future<void> pickRestaurant() async {
+    await makeRestaurantList();
+    await randomPickRestaurant();
+  }
+  Future<void> makeRestaurantList() async {
+    String myPageToken = null;
+    int maxCount = 0; //혹시나 에러나서 api 과다 호출되는 것을 막기 위함
+    for(int i = 0; i < userData.restaurantTheme.length; i++){
+      myPageToken = await addRestaurantList(userData.restaurantTheme[i]);
+      while(myPageToken != null && maxCount < 10){
+         myPageToken = await addRestaurantList(userData.restaurantTheme[i], myPageToken: myPageToken);
+         maxCount++;
+      }
+    }
+  }
+  Future<String> addRestaurantList(String keyword, {String myPageToken}) async {
+    var result = await googlePlace.search.getNearBySearch(
+    Location(lat: userData.latitude, lng: userData.longitude), userData.radius,
+    type: "restaurant", keyword: keyword, pagetoken: myPageToken!= null ? myPageToken : ""
+    );
+
+    for(int i = 0; i < result.results.length; i++) {
+      restaurantList.add(result.results[i]);
+      //print(result.results[i].name);
+    }
+    //print(result.nextPageToken);
+    return result.nextPageToken;
+  }
+  void randomPickRestaurant() async {
+    pickedRestaurant = restaurantList[_random.nextInt(restaurantList.length)];
+    if(pickedRestaurant.photos != null) {
+      pickedRestaurantPhoto = await this.googlePlace.photos.get(
+          pickedRestaurant.photos[0].photoReference, null, 400);
+    }
+    else{
+      pickedRestaurantPhoto = null;
+    }
+    setState(() {});
+  }
+  Widget restaurantDetailCard(){
+    return Card(
+      child: Container(
+        width: MediaQuery.of(context).size.width - 60,
+        height: 150,
+        color: Colors.white,
+        margin: EdgeInsets.all(10),
+        child:
+        pickedRestaurant== null ?
+        CircularProgressIndicator():
+        Column(
+          children: [
+            Container(height: 100,width: 100,
+                child:
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                    child:
+                    pickedRestaurantPhoto != null ?
+                    Image.memory(pickedRestaurantPhoto,
+                      fit: BoxFit.fill,) :
+                    Text("No Image")
+                )
+            ),
+            Text(pickedRestaurant.name),
+          ],
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+    );
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    pickRestaurant();
+  }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         floatingActionButton: Container(
           height: 300,
@@ -26,18 +115,22 @@ class _ResultViewState extends State<ResultView> {
                 heroTag: "Button1",
                 icon: Icon(
                   Icons.home,
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).primaryColor,
                 ),
                 label: Text(
                   "홈으로",
-                  style: TextStyle(color: Theme.of(context).accentColor),
+                  style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onPressed: () {
                   Get.offAll(MyHomePage(), transition: Transition.fadeIn);
                 },
               ),
               FloatingActionButton.extended(
+                backgroundColor: Theme.of(context).primaryColor,
                 heroTag: "Button2",
+                onPressed: () async {
+                  pickRestaurant();
+                },
                 icon: Icon(
                   Icons.restaurant_menu,
                   color: Colors.white,
@@ -47,48 +140,24 @@ class _ResultViewState extends State<ResultView> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              Card(
-                child: Container(
-                  width: MediaQuery.of(context).size.width - 60,
-                  height: 150,
-                  color: Colors.white,
-                  margin: EdgeInsets.all(10),
-                ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-              )
+              restaurantDetailCard()
             ],
           ),
         ),
         appBar: AppBar(),
-        body: Stack(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
-              child: GoogleMap(
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                initialCameraPosition:
-                    CameraPosition(target: LatLng(40, 40), zoom: 14),
-              ),
-            ),
-            Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Color(0x99ffffff)),
-                        child: Icon(Icons.location_on,
-                            size: 50, color: Colors.amber)),
-                  ],
-                )),
-          ],
-        ));
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+
+          child: GoogleMap(
+            zoomControlsEnabled: false,
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            initialCameraPosition: CameraPosition(
+                target: LatLng(userData.latitude,
+                    userData.longitude),
+                zoom: 14),
+          ),
+        ),
+    );
   }
 }

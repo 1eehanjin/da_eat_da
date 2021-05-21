@@ -43,6 +43,7 @@ dependencies:
   clay_containers: ^0.3.2
   flutter_color: ^2.0.0
   google_mobile_ads: ^0.12.2
+  google_place: ^0.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
