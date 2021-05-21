@@ -45,7 +45,7 @@ void main() async {
   );
 }
 
-
+Position position;
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
@@ -58,9 +58,13 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _setInitialPosition();
   }
 
-
+  _setInitialPosition() async {
+    position = await Geolocator.getCurrentPosition();
+    setState(() {});
+  }
 
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -102,8 +106,6 @@ class MyHomePage extends StatefulWidget {
   static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
       'PREFERENCES_IS_FIRST_LAUNCH_STRING';
 
-
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -121,46 +123,45 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   GlobalKey _four = GlobalKey();
   Position position;
 
-
-    int count = 0;
-    double initialDepth = 50;
-    List<bool> buttonState = [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ];
-    List<AnimationController> _animationController = [];
-    List<double> calculatedDepth = [];
+  int count = 0;
+  double initialDepth = 50;
+  List<bool> buttonState = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+  List<AnimationController> _animationController = [];
+  List<double> calculatedDepth = [];
   _setInitialPosition() async {
     position = await Geolocator.getCurrentPosition();
     setState(() {});
   }
 
-    @override
-    void initState() {
+  @override
+  void initState() {
     _setInitialPosition();
-      for (int i = 0; i < 13; i++) {
-        _animationController.add(AnimationController(
-            duration: Duration(
-              milliseconds: 600,
-            ),
-            vsync: this)
-          ..addListener(() {
-            setState(() {});
-          }));
-        calculatedDepth.add(50);
-      }
-      super.initState();
+    for (int i = 0; i < 13; i++) {
+      _animationController.add(AnimationController(
+          duration: Duration(
+            milliseconds: 600,
+          ),
+          vsync: this)
+        ..addListener(() {
+          setState(() {});
+        }));
+      calculatedDepth.add(50);
+    }
+    super.initState();
 
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       _isFirstLaunch().then((result) {
@@ -168,295 +169,281 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 //           ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]);
 //       });
 //     });
-      WidgetsBinding.instance.addPostFrameCallback((_) =>
-          ShowCaseWidget.of(context).startShowCase(
-              [_one, _two, _three, _four]));
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]));
+  }
 
-    Future<bool> _isFirstLaunch() async {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      bool isFirstLaunch = sharedPreferences
-          .getBool(MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING) ??
-          true;
+  Future<bool> _isFirstLaunch() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    bool isFirstLaunch = sharedPreferences
+            .getBool(MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING) ??
+        true;
 
-      if (!isFirstLaunch)
-        sharedPreferences.setBool(
-            MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING, false);
+    if (!isFirstLaunch)
+      sharedPreferences.setBool(
+          MyHomePage.PREFERENCES_IS_FIRST_LAUNCH_STRING, false);
 
-      return isFirstLaunch;
-    }
+    return isFirstLaunch;
+  }
 
-    double stagger(value, progress) {
-      return value * (0.6 - progress);
-    }
+  double stagger(value, progress) {
+    return value * (0.6 - progress);
+  }
 
-    void forwardButtonAnimation(int buttonNumber) {
-      _animationController[buttonNumber].forward();
-    }
+  void forwardButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].forward();
+  }
 
-    void reverseButtonAnimation(int buttonNumber) {
-      _animationController[buttonNumber].reverse();
-    }
+  void reverseButtonAnimation(int buttonNumber) {
+    _animationController[buttonNumber].reverse();
+  }
 
-    Widget guideButton(String name, String imageSource, int buttonNumber) {
-      return GestureDetector(
-          child: Container(
-              width: 100,
-              height: 150,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 10,
-                  ),
-                  ClayContainer(
-                    color: Theme
-                        .of(context)
-                        .accentColor
-                        .mix(
-                        Theme
-                            .of(context)
-                            .backgroundColor,
-                        1 - _animationController[buttonNumber].value),
-                    width: 75,
-                    height: 75,
-                    borderRadius: 20,
-                    depth: calculatedDepth[buttonNumber].toInt(),
-                    child: Center(
-                        child: name != "전체" ?
-                        Image.asset(
-                          imageSource,
-                          width: 50,
-                          height: 60,
-                          fit: BoxFit.contain,
-                        )
-                            :
-                            Text(
-                              "All", style: TextStyle(color: Colors.orange, fontSize: 30, fontWeight: FontWeight.bold)
+  Widget guideButton(String name, String imageSource, int buttonNumber) {
+    return GestureDetector(
+        child: Container(
+            width: 100,
+            height: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: 10,
+                ),
+                ClayContainer(
+                  color: Theme.of(context).accentColor.mix(
+                      Theme.of(context).backgroundColor,
+                      1 - _animationController[buttonNumber].value),
+                  width: 75,
+                  height: 75,
+                  borderRadius: 20,
+                  depth: calculatedDepth[buttonNumber].toInt(),
+                  child: Center(
+                      child: name != "전체"
+                          ? Image.asset(
+                              imageSource,
+                              width: 50,
+                              height: 60,
+                              fit: BoxFit.contain,
                             )
-                    ),
-                  ),
-                  Container(height: 12),
-                  Container(height: 40,
-                    child: Text(
-                      name,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2),
-                    ),
-                  ),
-                ],
-              )),
-          onTap: () {
-            setState(() {
-              if (buttonNumber == 0) {
-                if (buttonState[0] == false) {
-                  buttonState[0] = true;
-                  forwardButtonAnimation(0);
-                  for (int i = 1; i < buttonState.length; i++) {
-                    buttonState[i] = true;
-                    forwardButtonAnimation(i);
-                  }
-                  count = 12;
-                } else if (buttonState[0] == true) {
-                  buttonState[0] = false;
-                  reverseButtonAnimation(buttonNumber);
-                  for (int i = 1; i < buttonState.length; i++) {
-                    buttonState[i] = false;
-                    reverseButtonAnimation(i);
-                  }
-                  count = 0;
-                }
-              } else {
-                if (buttonState[buttonNumber] == true) {
-                  reverseButtonAnimation(buttonNumber);
-                  buttonState[buttonNumber] = false;
-                  count--;
-                } else {
-                  forwardButtonAnimation(buttonNumber);
-                  buttonState[buttonNumber] = true;
-                  count++;
-                }
-                if (count == 12) {
-                  forwardButtonAnimation(0);
-                  buttonState[0] = true;
-                } else {
-                  reverseButtonAnimation(0);
-                  buttonState[0] = false;
-                }
-              }
-            });
-          });
-    }
-
-    @override
-    Widget build(BuildContext context) {
-      for (int i = 0; i < 13; i++) {
-        calculatedDepth[i] =
-            stagger(initialDepth, _animationController[i].value);
-      }
-      double PHONESIZE_WIDTH = Get.width;
-      return Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .backgroundColor,
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: [
-                  Container(
-                      margin: EdgeInsets.only(left: 20, top: 20, bottom: 10),
-                      child: Showcase(
-                        key: _one,
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              top: 50, bottom: 30, left: 10),
-                          child: RichText(
-                            text: TextSpan(
-                              text: '오늘의\n',
+                          : Text("All",
                               style: TextStyle(
+                                  color: Colors.orange,
                                   fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  height: 1.3),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: '음식 테마',
-                                    style: TextStyle(
-                                        color: Colors.orangeAccent,
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold)),
-                                TextSpan(
-                                    text: '는?',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold)),
-                              ],
-                            ),
+                                  fontWeight: FontWeight.bold))),
+                ),
+                Container(height: 12),
+                Container(
+                  height: 40,
+                  child: Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2),
+                  ),
+                ),
+              ],
+            )),
+        onTap: () {
+          setState(() {
+            if (buttonNumber == 0) {
+              if (buttonState[0] == false) {
+                buttonState[0] = true;
+                forwardButtonAnimation(0);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = true;
+                  forwardButtonAnimation(i);
+                }
+                count = 12;
+              } else if (buttonState[0] == true) {
+                buttonState[0] = false;
+                reverseButtonAnimation(buttonNumber);
+                for (int i = 1; i < buttonState.length; i++) {
+                  buttonState[i] = false;
+                  reverseButtonAnimation(i);
+                }
+                count = 0;
+              }
+            } else {
+              if (buttonState[buttonNumber] == true) {
+                reverseButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = false;
+                count--;
+              } else {
+                forwardButtonAnimation(buttonNumber);
+                buttonState[buttonNumber] = true;
+                count++;
+              }
+              if (count == 12) {
+                forwardButtonAnimation(0);
+                buttonState[0] = true;
+              } else {
+                reverseButtonAnimation(0);
+                buttonState[0] = false;
+              }
+            }
+          });
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    for (int i = 0; i < 13; i++) {
+      calculatedDepth[i] = stagger(initialDepth, _animationController[i].value);
+    }
+    double PHONESIZE_WIDTH = Get.width;
+    return Scaffold(
+      backgroundColor: Theme.of(context).backgroundColor,
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                Container(
+                    margin: EdgeInsets.only(left: 20, top: 20, bottom: 10),
+                    child: Showcase(
+                      key: _one,
+                      child: Container(
+                        padding: EdgeInsets.only(top: 50, bottom: 30, left: 10),
+                        child: RichText(
+                          text: TextSpan(
+                            text: '오늘의\n',
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                height: 1.3),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: '음식 테마',
+                                  style: TextStyle(
+                                      color: Colors.orangeAccent,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: '는?',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold)),
+                            ],
                           ),
                         ),
-                        description: "test",
-                      )),
-                  Container(
-                    child: Stack(children: [
-                      Container(
-                        width: PHONESIZE_WIDTH,
-                        child: Wrap(
-                          alignment: WrapAlignment.spaceEvenly,
-                          spacing: 5,
-                          children: [
-                            Showcase(
-                              key: _three,
-                              child: guideButton(
-                                  "전체", "images/theme/koreanfood.png", 0),
-                              description: 'test',
-                            ),
-                            guideButton("한식", "images/theme/koreanfood.png", 1),
-                            guideButton("분식", "images/theme/gimbap.png", 2),
-                            guideButton("카페", "images/theme/cafe.png", 3),
-                            guideButton(
-                                "돈가스/회/일식", "images/theme/sushi.png", 4),
-                            guideButton("치킨", "images/theme/chicken.png", 5),
-                            guideButton("피자", "images/theme/pizza.png", 6),
-                            guideButton("아시안", "images/theme/asianfood.png", 7),
-                            guideButton("양식", "images/theme/spaguetti.png", 8),
-                            guideButton(
-                                "중국집", "images/theme/chinesefood.png", 9),
-                            guideButton("찜/탕", "images/theme/cooking.png", 10),
-                            guideButton(
-                                "패스트푸드", "images/theme/frenchfries.png", 11),
-                            guideButton("술", "images/theme/beer.png", 12),
-                          ],
-                        ),
                       ),
-
-                      Showcase.withWidget(
-                        key: _two,
-                        child: backShowCase(),
-                        description: 'test1212212121211211',
+                      description: "test",
+                    )),
+                Container(
+                  child: Stack(children: [
+                    Container(
+                      width: PHONESIZE_WIDTH,
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceEvenly,
+                        spacing: 5,
+                        children: [
+                          Showcase(
+                            key: _three,
+                            child: guideButton(
+                                "전체", "images/theme/koreanfood.png", 0),
+                            description: 'test',
+                          ),
+                          guideButton("한식", "images/theme/koreanfood.png", 1),
+                          guideButton("분식", "images/theme/gimbap.png", 2),
+                          guideButton("카페", "images/theme/cafe.png", 3),
+                          guideButton("돈가스/회/일식", "images/theme/sushi.png", 4),
+                          guideButton("치킨", "images/theme/chicken.png", 5),
+                          guideButton("피자", "images/theme/pizza.png", 6),
+                          guideButton("아시안", "images/theme/asianfood.png", 7),
+                          guideButton("양식", "images/theme/spaguetti.png", 8),
+                          guideButton("중국집", "images/theme/chinesefood.png", 9),
+                          guideButton("찜/탕", "images/theme/cooking.png", 10),
+                          guideButton(
+                              "패스트푸드", "images/theme/frenchfries.png", 11),
+                          guideButton("술", "images/theme/beer.png", 12),
+                        ],
                       ),
-                    ]),
-                  ),
-                  Container(
-                    height: 150,
-                  )
-                ],
-              ),
+                    ),
+                    Showcase.withWidget(
+                      key: _two,
+                      child: backShowCase(),
+                      description: 'test1212212121211211',
+                    ),
+                  ]),
+                ),
+                Container(
+                  height: 150,
+                )
+              ],
             ),
-            Column(crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                MaterialButton(
-
-                  padding: EdgeInsets.all(0),
-                  onPressed: () {
-                    Get.to(
-                        MapView(),
-                        transition: Transition.fadeIn,
-                        arguments:
-                        Sendlatlng(
-                            lat: position != null ? position.latitude : 37.4500221, lng: position != null? position.longitude : 126.653488 ));
-                  },
-
-                  child: Showcase(
-                    key: _four,
-                    showArrow: false,
-                    description: 'test121212121212121',
-                    child: Hero(
-                      tag: "Button1",
-                      child: Container(
-                        width: Get.width,
-                        alignment: Alignment.center,
-                        height: 70,
-                        decoration: BoxDecoration(
-                            color: Theme
-                                .of(context)
-                                .primaryColor,
-
-                            boxShadow: [
-                              BoxShadow(
-                                  blurRadius: 8,
-                                  offset: Offset(0, 15),
-                                  color: Theme
-                                      .of(context)
-                                      .primaryColor
-                                      .withOpacity(.6),
-                                  spreadRadius: -9)
-                            ]),
-                        child: Text(
-                          "결정해 드릴게요!",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              MaterialButton(
+                padding: EdgeInsets.all(0),
+                onPressed: () {
+                  Get.to(MapView(),
+                      transition: Transition.fadeIn,
+                      arguments: Sendlatlng(
+                          lat:
+                              position != null ? position.latitude : 37.4500221,
+                          lng: position != null
+                              ? position.longitude
+                              : 126.653488));
+                },
+                child: Showcase(
+                  key: _four,
+                  showArrow: false,
+                  description: 'test121212121212121',
+                  child: Hero(
+                    tag: "Button1",
+                    child: Container(
+                      width: Get.width,
+                      alignment: Alignment.center,
+                      height: 70,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 8,
+                                offset: Offset(0, 15),
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(.6),
+                                spreadRadius: -9)
+                          ]),
+                      child: Text(
+                        "결정해 드릴게요!",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),
-                 Container(width: PHONESIZE_WIDTH,
-                   color: Colors.white,
-                   child: BannerAdWidget(AdSize.banner),
-                 ),
-
-              ],
-            ),
-          ],
-        ),
-      );
-    }
-
-    Widget backShowCase() {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 130,
-          )
+              ),
+              Container(
+                width: PHONESIZE_WIDTH,
+                color: Colors.white,
+                child: BannerAdWidget(AdSize.banner),
+              ),
+            ],
+          ),
         ],
-      );
-    }
+      ),
+    );
   }
+
+  Widget backShowCase() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 130,
+        )
+      ],
+    );
+  }
+}
