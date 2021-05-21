@@ -13,6 +13,10 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
+  Set<Circle> _circles= Set.from([Circle(circleId: CircleId("myPosition"),fillColor: Color(0x50FFA500),
+  center: LatLng((Get.arguments as Sendlatlng).lat, (Get.arguments as Sendlatlng).lng),
+  radius: 500,strokeWidth: 0
+  )]);
   @override
   Widget build(BuildContext context) {
     //Get.snackbar("알림", "위치를 변경하려면 마커를 드래그해 주세요.", snackPosition: SnackPosition.BOTTOM);
@@ -26,6 +30,7 @@ class _MapViewState extends State<MapView> {
         fontSize: 16.0);
     return Scaffold(
         floatingActionButton: Container(
+          margin: EdgeInsets.only(bottom: 100),
           height: 120,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,37 +62,18 @@ class _MapViewState extends State<MapView> {
           ),
         ),
         appBar: AppBar(),
-        body: Stack(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
+        body: Container(
+          height: MediaQuery.of(context).size.height,
 
-              child: GoogleMap(
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                initialCameraPosition: CameraPosition(
-                    target: LatLng((Get.arguments as Sendlatlng).lat,
-                        (Get.arguments as Sendlatlng).lng),
-                    zoom: 14),
-              ),
-            ),
-            Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Color(0x99ffffff)),
-                        child: Icon(Icons.location_on,
-                            size: 50, color: Colors.amber)),
-                  ],
-                )),
-          ],
-        ));
+          child: GoogleMap(
+            circles: _circles,
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            initialCameraPosition: CameraPosition(
+                target: LatLng((Get.arguments as Sendlatlng).lat,
+                    (Get.arguments as Sendlatlng).lng),
+                zoom: 14),
+          ),
+        ),);
   }
 }
