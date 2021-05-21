@@ -25,7 +25,7 @@ class _MapViewState extends State<MapView> {
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        textColor: Theme.of(context).accentColor,
+        textColor: Theme.of(context).primaryColor,
         backgroundColor: Colors.white70,
         fontSize: 16.0);
     return Scaffold(
@@ -38,14 +38,15 @@ class _MapViewState extends State<MapView> {
             children: [
               FloatingActionButton(
                 backgroundColor: Colors.white,
-                heroTag: "Button1",
+                heroTag: "Button2",
                 child: Text(
                   "500m",
-                  style: TextStyle(color: Theme.of(context).accentColor),
+                  style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
               ),
               FloatingActionButton.extended(
-                heroTag: "Buttton2",
+                backgroundColor: Theme.of(context).primaryColor,
+                heroTag: "Buttton1",
                 icon: Icon(
                   Icons.restaurant_menu,
                   color: Colors.white,
