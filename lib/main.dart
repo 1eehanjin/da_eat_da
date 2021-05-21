@@ -9,8 +9,6 @@ import 'package:get/get.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'ResultView.dart';
 import 'mapView.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
@@ -57,14 +55,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String selectedAddress;
-
   @override
   void initState() {
     super.initState();
-    _setInitialPostion();
+    _setInitialPosition();
   }
 
-  _setInitialPostion() async {
+  _setInitialPosition() async {
     position = await Geolocator.getCurrentPosition();
     setState(() {});
   }
@@ -86,9 +83,9 @@ class _MyAppState extends State<MyApp> {
       // },
       title: '다잇다',
       theme: ThemeData(
-        primaryColor: Colors.orangeAccent,
-        backgroundColor: Colors.grey[100],
-        accentColor: Colors.orangeAccent,
+        primaryColor: Colors.amber,
+        backgroundColor: Color(0xFFF2F2F2),
+        accentColor: Colors.orange[100],
         appBarTheme: AppBarTheme(
             textTheme: TextTheme(headline6: TextStyle(color: Colors.white))),
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -109,8 +106,6 @@ class MyHomePage extends StatefulWidget {
   static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
       'PREFERENCES_IS_FIRST_LAUNCH_STRING';
 
-
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -121,27 +116,13 @@ class Sendlatlng {
   Sendlatlng({this.lat, this.lng});
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   GlobalKey _one = GlobalKey();
   GlobalKey _two = GlobalKey();
   GlobalKey _three = GlobalKey();
   GlobalKey _four = GlobalKey();
+  Position position;
 
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _isFirstLaunch().then((result) {
-    //     if (result)
-    //       ShowCaseWidget.of(myContext)
-    //           .startShowCase([_one, _two, _three, _four]);
-    //   });
-    // });
   int count = 0;
   double initialDepth = 50;
   List<bool> buttonState = [
@@ -161,9 +142,14 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
   List<AnimationController> _animationController = [];
   List<double> calculatedDepth = [];
+  _setInitialPosition() async {
+    position = await Geolocator.getCurrentPosition();
+    setState(() {});
+  }
 
   @override
   void initState() {
+    _setInitialPosition();
     for (int i = 0; i < 13; i++) {
       _animationController.add(AnimationController(
           duration: Duration(
@@ -185,7 +171,6 @@ class _MyHomePageState extends State<MyHomePage> {
 //     });
     WidgetsBinding.instance.addPostFrameCallback((_) =>
         ShowCaseWidget.of(context).startShowCase([_one, _two, _three, _four]));
-
   }
 
   Future<bool> _isFirstLaunch() async {
@@ -233,15 +218,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   borderRadius: 20,
                   depth: calculatedDepth[buttonNumber].toInt(),
                   child: Center(
-                      child: Image.asset(
-                    imageSource,
-                    width: 50,
-                    height: 60,
-                    fit: BoxFit.contain,
-                  )),
+                      child: name != "전체"
+                          ? Image.asset(
+                              imageSource,
+                              width: 50,
+                              height: 60,
+                              fit: BoxFit.contain,
+                            )
+                          : Text("All",
+                              style: TextStyle(
+                                  color: Colors.orange,
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold))),
                 ),
                 Container(height: 12),
-                Container(height: 40,
+                Container(
+                  height: 40,
                   child: Text(
                     name,
                     textAlign: TextAlign.center,
@@ -275,7 +267,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 count = 0;
               }
             } else {
-
               if (buttonState[buttonNumber] == true) {
                 reverseButtonAnimation(buttonNumber);
                 buttonState[buttonNumber] = false;
@@ -291,7 +282,6 @@ class _MyHomePageState extends State<MyHomePage> {
               } else {
                 reverseButtonAnimation(0);
                 buttonState[0] = false;
-
               }
             }
           });
@@ -300,7 +290,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     for (int i = 0; i < 13; i++) {
       calculatedDepth[i] = stagger(initialDepth, _animationController[i].value);
     }
@@ -375,7 +364,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
-
                     Showcase.withWidget(
                       key: _two,
                       child: backShowCase(),
@@ -389,18 +377,21 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          Column(crossAxisAlignment: CrossAxisAlignment.end,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               MaterialButton(
-
                 padding: EdgeInsets.all(0),
                 onPressed: () {
-                    Get.to(MapView(),
-                        transition: Transition.fadeIn,
-                        arguments:
-                            Sendlatlng(lat: position.latitude, lng: position.longitude));
-                  },
-
+                  Get.to(MapView(),
+                      transition: Transition.fadeIn,
+                      arguments: Sendlatlng(
+                          lat:
+                              position != null ? position.latitude : 37.4500221,
+                          lng: position != null
+                              ? position.longitude
+                              : 126.653488));
+                },
                 child: Showcase(
                   key: _four,
                   showArrow: false,
@@ -408,34 +399,36 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Hero(
                     tag: "Button1",
                     child: Container(
-                        width: Get.width,alignment: Alignment.center,
-                        height: 70,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-
-                            boxShadow: [
-                              BoxShadow(
-                                  blurRadius: 8,
-                                  offset: Offset(0, 15),
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(.6),
-                                  spreadRadius: -9)
-                            ]),
-                        child: Text(
-                          "결정해 드릴게요!",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),),
+                      width: Get.width,
+                      alignment: Alignment.center,
+                      height: 70,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 8,
+                                offset: Offset(0, 15),
+                                color: Theme.of(context)
+                                    .primaryColor
+                                    .withOpacity(.6),
+                                spreadRadius: -9)
+                          ]),
+                      child: Text(
+                        "결정해 드릴게요!",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              Container(width: PHONESIZE_WIDTH,
+              Container(
+                width: PHONESIZE_WIDTH,
+                color: Colors.white,
                 child: BannerAdWidget(AdSize.banner),
               ),
-
             ],
           ),
         ],
