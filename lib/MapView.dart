@@ -67,6 +67,7 @@ class _MapViewState extends State<MapView> {
 
           child: GoogleMap(
             circles: _circles,
+            zoomControlsEnabled: false,
             mapType: MapType.normal,
             myLocationEnabled: true,
             initialCameraPosition: CameraPosition(
