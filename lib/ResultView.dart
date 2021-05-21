@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:da_eat_da/UserData.dart';
 import 'package:da_eat_da/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_place/google_place.dart';
 
 class ResultView extends StatefulWidget {
   @override
@@ -12,6 +14,7 @@ class ResultView extends StatefulWidget {
 }
 
 class _ResultViewState extends State<ResultView> {
+  UserData userData = UserData(latitude: 37.4500221, longitude: 126.653488, radius: 500, restaurantTheme: ["중식", "한식", "일식"]);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +41,15 @@ class _ResultViewState extends State<ResultView> {
               ),
               FloatingActionButton.extended(
                 heroTag: "Button2",
+                onPressed: () async {
+                  var googlePlace = GooglePlace("AIzaSyBZD_3rrGlloGukFuHASvN5M10filFEims");
+                  var result = await googlePlace.search.getNearBySearch(
+                      Location(lat: 37.45119, lng: 126.656338), 500,
+                      type: "restaurant", keyword: "");
+                  for(int i = 0; i < result.results.length; i++) {
+                    print(result.results[i].name);
+                  }
+                },
                 icon: Icon(
                   Icons.restaurant_menu,
                   color: Colors.white,
@@ -61,34 +73,19 @@ class _ResultViewState extends State<ResultView> {
           ),
         ),
         appBar: AppBar(),
-        body: Stack(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
-              child: GoogleMap(
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                initialCameraPosition:
-                    CameraPosition(target: LatLng(40, 40), zoom: 14),
-              ),
-            ),
-            Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: Color(0x99ffffff)),
-                        child: Icon(Icons.location_on,
-                            size: 50, color: Colors.amber)),
-                  ],
-                )),
-          ],
-        ));
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+
+          child: GoogleMap(
+            zoomControlsEnabled: false,
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            initialCameraPosition: CameraPosition(
+                target: LatLng(userData.latitude,
+                    userData.longitude),
+                zoom: 14),
+          ),
+        ),
+    );
   }
 }
