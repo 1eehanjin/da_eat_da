@@ -23,12 +23,17 @@ class _ResultViewState extends State<ResultView> {
   SearchResult pickedRestaurant = null;
   final _random = new Random();
   Uint8List pickedRestaurantPhoto;
-
-  Future<void> pickRestaurant() async {
+  bool isPicked = false;
+  String waitMessage = "주변 가게를 찾고있습니다...";
+  void pickRestaurant() async {
     await makeRestaurantList();
+    waitMessage = "가게를 뽑고 있습니다...";
+    setState(() {
+
+    });
     await randomPickRestaurant();
   }
-  Future<void> makeRestaurantList() async {
+  void makeRestaurantList() async {
     String myPageToken = null;
     int maxCount = 0; //혹시나 에러나서 api 과다 호출되는 것을 막기 위함
     for(int i = 0; i < userData.restaurantTheme.length; i++){
@@ -42,9 +47,11 @@ class _ResultViewState extends State<ResultView> {
   Future<String> addRestaurantList(String keyword, {String myPageToken}) async {
     var result = await googlePlace.search.getNearBySearch(
     Location(lat: userData.latitude, lng: userData.longitude), userData.radius,
-    type: "restaurant", keyword: keyword, pagetoken: myPageToken!= null ? myPageToken : ""
+    type: "restaurant", keyword: keyword, pagetoken: myPageToken!= null ? myPageToken : null
     );
-
+    if(result == null){
+      return null;
+    }
     for(int i = 0; i < result.results.length; i++) {
       restaurantList.add(result.results[i]);
       //print(result.results[i].name);
@@ -53,6 +60,10 @@ class _ResultViewState extends State<ResultView> {
     return result.nextPageToken;
   }
   void randomPickRestaurant() async {
+    if(restaurantList.length == 0){
+      return;
+    }
+
     pickedRestaurant = restaurantList[_random.nextInt(restaurantList.length)];
     if(pickedRestaurant.photos != null) {
       pickedRestaurantPhoto = await this.googlePlace.photos.get(
@@ -61,6 +72,7 @@ class _ResultViewState extends State<ResultView> {
     else{
       pickedRestaurantPhoto = null;
     }
+    isPicked = true;
     setState(() {});
   }
   Widget restaurantDetailCard(){
@@ -71,8 +83,8 @@ class _ResultViewState extends State<ResultView> {
         color: Colors.white,
         margin: EdgeInsets.all(10),
         child:
-        pickedRestaurant== null ?
-        CircularProgressIndicator():
+        (restaurantList.length == 0 || pickedRestaurant==null ?
+        Text("주변에 조회되는 가게가 없습니다!"):
         Column(
           children: [
             Container(height: 100,width: 100,
@@ -88,7 +100,7 @@ class _ResultViewState extends State<ResultView> {
             ),
             Text(pickedRestaurant.name),
           ],
-        ),
+        ))
       ),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -102,8 +114,25 @@ class _ResultViewState extends State<ResultView> {
   }
   @override
   Widget build(BuildContext context) {
+    if(isPicked == false){
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Container(
+          height: 200,
+              child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CircularProgressIndicator(),
+                  Text(waitMessage)
+                ],
+              ),
+            )
 
-    return Scaffold(
+        ),
+      ));
+    }
+    else {
+      return Scaffold(
         floatingActionButton: Container(
           height: 300,
           child: Column(
@@ -115,18 +144,24 @@ class _ResultViewState extends State<ResultView> {
                 heroTag: "Button1",
                 icon: Icon(
                   Icons.home,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme
+                      .of(context)
+                      .primaryColor,
                 ),
                 label: Text(
                   "홈으로",
-                  style: TextStyle(color: Theme.of(context).primaryColor),
+                  style: TextStyle(color: Theme
+                      .of(context)
+                      .primaryColor),
                 ),
                 onPressed: () {
                   Get.offAll(MyHomePage(), transition: Transition.fadeIn);
                 },
               ),
               FloatingActionButton.extended(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme
+                    .of(context)
+                    .primaryColor,
                 heroTag: "Button2",
                 onPressed: () async {
                   pickRestaurant();
@@ -146,7 +181,10 @@ class _ResultViewState extends State<ResultView> {
         ),
         appBar: AppBar(),
         body: Container(
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
 
           child: GoogleMap(
             zoomControlsEnabled: false,
@@ -158,6 +196,7 @@ class _ResultViewState extends State<ResultView> {
                 zoom: 14),
           ),
         ),
-    );
+      );
+    }
   }
 }
