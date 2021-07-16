@@ -9,12 +9,6 @@ import 'package:google_place/google_place.dart';
 import 'ResultView.dart';
 import 'package:geolocator/geolocator.dart';
 
-class SendLatLngtoResult {
-  double lat1;
-  double lng1;
-  SendLatLngtoResult({this.lat1, this.lng1});
-}
-
 class MapView extends StatefulWidget {
   @override
   _MapViewState createState() => _MapViewState();
@@ -39,7 +33,8 @@ class _MapViewState extends State<MapView> {
         strokeWidth: 0)
   ]);
 
-  Locationinfo locationinfo;
+  var locationinfo = Locationinfo(
+      (Get.arguments as Sendlatlng).lat, (Get.arguments as Sendlatlng).lng);
 
   void _updatePosition(CameraPosition _position) {
     print(
@@ -99,10 +94,9 @@ class _MapViewState extends State<MapView> {
               onPressed: () {
                 Get.to(ResultView(),
                     transition: Transition.fadeIn,
-                    arguments: SendLatLngtoResult(
-                        lat1: locationinfo.lat != null ? locationinfo.lat : 37,
-                        lng1:
-                            locationinfo.lng != null ? locationinfo.lng : 37));
+                    arguments: Sendlatlng(
+                        lat: locationinfo != null ? locationinfo.lat : 37,
+                        lng: locationinfo != null ? locationinfo.lng : 37));
               },
             ),
           ],
