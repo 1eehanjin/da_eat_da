@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:da_eat_da/Locationinfo.dart';
+import 'package:da_eat_da/UserData.dart';
 import 'package:da_eat_da/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,8 +19,8 @@ class _MapViewState extends State<MapView> {
   Set<Marker> _markers = Set.from([
     Marker(
         markerId: MarkerId('1'),
-        position: LatLng((Get.arguments as Sendlatlng).lat,
-            (Get.arguments as Sendlatlng).lng),
+        position: LatLng((Get.arguments as UserData).latitude,
+            (Get.arguments as UserData).longitude),
         draggable: true)
   ]);
 
@@ -27,14 +28,14 @@ class _MapViewState extends State<MapView> {
     Circle(
         circleId: CircleId("myPosition"),
         fillColor: Color(0x50FFA500),
-        center: LatLng((Get.arguments as Sendlatlng).lat,
-            (Get.arguments as Sendlatlng).lng),
-        radius: 500,
+        center: LatLng((Get.arguments as UserData).latitude,
+            (Get.arguments as UserData).longitude),
+        radius: 300,
         strokeWidth: 0)
   ]);
 
-  var locationinfo = Locationinfo(
-      (Get.arguments as Sendlatlng).lat, (Get.arguments as Sendlatlng).lng);
+  var locationinfo = Locationinfo((Get.arguments as UserData).latitude,
+      (Get.arguments as UserData).longitude);
 
   void _updatePosition(CameraPosition _position) {
     print(
@@ -94,9 +95,10 @@ class _MapViewState extends State<MapView> {
               onPressed: () {
                 Get.to(ResultView(),
                     transition: Transition.fadeIn,
-                    arguments: Sendlatlng(
-                        lat: locationinfo != null ? locationinfo.lat : 37,
-                        lng: locationinfo != null ? locationinfo.lng : 37));
+                    arguments: UserData(
+                        latitude: locationinfo != null ? locationinfo.lat : 37,
+                        longitude:
+                            locationinfo != null ? locationinfo.lng : 37));
               },
             ),
           ],
@@ -106,14 +108,14 @@ class _MapViewState extends State<MapView> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         child: GoogleMap(
-          //circles: _circles,
+          circles: _circles,
           zoomControlsEnabled: false,
           mapType: MapType.normal,
           myLocationEnabled: true,
           initialCameraPosition: CameraPosition(
-              target: LatLng((Get.arguments as Sendlatlng).lat,
-                  (Get.arguments as Sendlatlng).lng),
-              zoom: 14),
+              target: LatLng((Get.arguments as UserData).latitude,
+                  (Get.arguments as UserData).longitude),
+              zoom: 17),
           markers: _markers,
           // Set<Marker>.of(<Marker>[
           //   Marker(

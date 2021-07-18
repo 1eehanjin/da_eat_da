@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:da_eat_da/AdWidget.dart';
+import 'package:da_eat_da/UserData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -110,11 +111,11 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class Sendlatlng {
-  double lat;
-  double lng;
-  Sendlatlng({this.lat, this.lng});
-}
+// class Sendlatlng {
+//   double lat;
+//   double lng;
+//   Sendlatlng({this.lat, this.lng});
+// }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   GlobalKey _one = GlobalKey();
@@ -385,10 +386,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 onPressed: () {
                   Get.to(MapView(),
                       transition: Transition.fadeIn,
-                      arguments: Sendlatlng(
-                          lat:
+                      arguments: UserData(
+                          latitude:
                               position != null ? position.latitude : 37.4500221,
-                          lng: position != null
+                          longitude: position != null
                               ? position.longitude
                               : 126.653488));
                 },

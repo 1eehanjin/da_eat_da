@@ -19,8 +19,8 @@ class ResultView extends StatefulWidget {
 
 class _ResultViewState extends State<ResultView> {
   UserData userData = UserData(
-      latitude: (Get.arguments as Sendlatlng).lat,
-      longitude: (Get.arguments as Sendlatlng).lng,
+      latitude: (Get.arguments as UserData).latitude,
+      longitude: (Get.arguments as UserData).longitude,
       radius: 500,
       restaurantTheme: ["중식", "한식", "일식"]);
   var googlePlace = GooglePlace("AIzaSyBZD_3rrGlloGukFuHASvN5M10filFEims");
