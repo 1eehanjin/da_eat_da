@@ -35,6 +35,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^5.0.0
   geolocator: ^7.0.3
+  open_location_code:
+   git:
+     url: git://github.com/google/open-location-code.git
+     path: dart
   http: ^0.13.3
   google_maps_flutter: ^2.0.3
   cached_network_image: ^2.5.1

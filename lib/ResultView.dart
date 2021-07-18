@@ -11,6 +11,8 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:open_location_code/open_location_code.dart' as olc;
 
 class ResultView extends StatefulWidget {
   @override
@@ -29,6 +31,8 @@ class _ResultViewState extends State<ResultView> {
   final _random = new Random();
   Uint8List pickedRestaurantPhoto;
   bool isPicked = false;
+  String plusCode;
+
   String waitMessage = "주변 가게를 찾고있습니다...";
   void pickRestaurant() async {
     await makeRestaurantList();
@@ -83,7 +87,16 @@ class _ResultViewState extends State<ResultView> {
       pickedRestaurantPhoto = null;
     }
     isPicked = true;
+    plusCode = pickedRestaurant.plusCode.globalCode;
+
     setState(() {});
+  }
+
+  Position getPosition(String fromPlusCode) {
+    olc.CodeArea ca = olc.decode(fromPlusCode);
+    Position position =
+        Position(latitude: ca.center.latitude, longitude: ca.center.longitude);
+    return position;
   }
 
   Widget restaurantDetailCard() {
@@ -183,6 +196,12 @@ class _ResultViewState extends State<ResultView> {
         body: Container(
           height: MediaQuery.of(context).size.height,
           child: GoogleMap(
+            markers: Set<Marker>.of(<Marker>[
+              Marker(
+                  markerId: MarkerId('1'),
+                  position: LatLng(getPosition(plusCode).latitude,
+                      getPosition(plusCode).longitude))
+            ]),
             zoomControlsEnabled: false,
             mapType: MapType.normal,
             myLocationEnabled: true,
