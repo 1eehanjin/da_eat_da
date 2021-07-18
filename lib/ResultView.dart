@@ -206,8 +206,9 @@ class _ResultViewState extends State<ResultView> {
             mapType: MapType.normal,
             myLocationEnabled: true,
             initialCameraPosition: CameraPosition(
-                target: LatLng(userData.latitude, userData.longitude),
-                zoom: 14),
+                target: LatLng(getPosition(plusCode).latitude,
+                    getPosition(plusCode).longitude),
+                zoom: 16),
           ),
         ),
       );
